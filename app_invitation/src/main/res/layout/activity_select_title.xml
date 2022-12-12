@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.SelectTitleActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="10dp"
+            android:descendantFocusability="beforeDescendants"
+            android:focusableInTouchMode="true"
+            android:layout_marginRight="10dp">
+
+            <com.infyson.invitationcard.classes.CustomTextView
+                android:id="@+id/tv_set_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="Select Title"
+                android:textSize="20dp" />
+
+
+            <com.infyson.invitationcard.classes.CustomTextView
+                android:id="@+id/tv_set_title_preview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_set_title"
+                android:gravity="center"
+                android:text="Title Preview" />
+
+            <com.infyson.invitationcard.classes.CustomEditText
+                android:id="@+id/edt_title"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@+id/tv_set_title_preview"
+                android:background="@drawable/border"
+                android:gravity="center"
+                android:hint="text" />
+
+            <ImageView
+                android:id="@+id/btn_left_title"
+                android:layout_width="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_height="50dp"
+                android:layout_below="@+id/edt_title"
+                android:background="@drawable/ic_left2" />
+
+            <ImageView
+                android:layout_marginTop="5dp"
+                android:id="@+id/btn_right_title"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/edt_title"
+                android:background="@drawable/ic_left1" />
+
+            <com.infyson.invitationcard.classes.CustomTextView
+                android:id="@+id/tv_msg_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/btn_right_title"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="Select Message"
+                android:textSize="20dp" />
+
+
+            <com.infyson.invitationcard.classes.CustomTextView
+                android:id="@+id/tv_set_msg_preview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_msg_title"
+                android:gravity="center"
+                android:text="Message Preview" />
+
+
+            <com.infyson.invitationcard.classes.CustomEditText
+                android:id="@+id/edt_meg"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_below="@+id/tv_set_msg_preview"
+                android:background="@drawable/border"
+                android:gravity="center"
+                android:hint="Message" />
+
+            <ImageView
+                android:id="@+id/btn_msg_right"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/edt_meg"
+                android:background="@drawable/ic_left1" />
+
+            <ImageView
+                android:id="@+id/btn_mrg_left"
+                android:layout_width="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_height="50dp"
+                android:layout_below="@+id/edt_meg"
+                android:background="@drawable/ic_left2" />
+
+            <com.infyson.invitationcard.classes.CustomButton
+                android:id="@+id/btn_next"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_below="@+id/btn_mrg_left"
+                android:background="@drawable/button_bg"
+                android:text="Next" />
+
+
+
+
+
+        </RelativeLayout>
+    </ScrollView>
+
+    <RelativeLayout
+        android:id="@+id/rl_banner_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center">
+
+        <RelativeLayout
+            android:id="@+id/bannerAdContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:gravity="center" />
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

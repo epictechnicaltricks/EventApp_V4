@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.ParthThemeActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_marginBottom="50dp"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <LinearLayout
+                android:id="@+id/ll_one"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+
+                <com.infyson.invitationcard.classes.CustomButton
+                    android:id="@+id/iv_general"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/ic_general11" />
+
+                <com.infyson.invitationcard.classes.CustomButton
+                    android:id="@+id/iv_birthday"
+                    android:layout_width="150dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_height="150dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/ic_birthday11" />
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:id="@+id/ll_three"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ll_one"
+                android:gravity="center">
+
+                <com.infyson.invitationcard.classes.CustomButton
+                    android:id="@+id/iv_anniversary"
+                    android:layout_marginRight="10dp"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/ic_anniversary11" />
+
+                <com.infyson.invitationcard.classes.CustomButton
+                    android:id="@+id/iv_wedding"
+                    android:layout_width="150dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/ic_wedding11" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ll_three"
+                android:gravity="center">
+
+
+                <com.infyson.invitationcard.classes.CustomButton
+                    android:id="@+id/iv_kids_birthday"
+                    android:layout_width="150dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/ic_kid_birthday11" />
+
+                <com.infyson.invitationcard.classes.CustomButton
+                    android:id="@+id/iv_more_app"
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/ic_more_apps" />
+
+
+            </LinearLayout>
+
+
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+    <RelativeLayout
+        android:id="@+id/rl_banner_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center">
+
+        <RelativeLayout
+            android:id="@+id/bannerAdContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:gravity="center" />
+
+
+    </RelativeLayout>
+</RelativeLayout>

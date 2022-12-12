@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <integer-array name="photo_editor_photos">
+        <item>@drawable/s_1</item>
+        <item>@drawable/s_2</item>
+
+    </integer-array>
+
+    <item name="item_click_support" type="id" />
+
+  
+    <array name="TitleGeneral">
+        <item>It\'s an Invitation!</item>
+        <item>It\'s my Party!</item>
+        <item>Let\'s Party!</item>
+        <item>Let\'s have a Blast!</item>
+        <item>Party Invitation!</item>
+        <item>Let\'s Celebrate!</item>
+        <item>CHEERS!</item>
+        <item>You\'re Invited on Christmas eve!</item>
+        <item>PARTY!</item>
+        <item>Lights,Music,Party!!</item>
+        <item>Invitation</item>
+        <item>You\'re Invited!</item>
+        <item>You\'re Invited for Celebration!</item>
+        <item>Welcome to my Party!</item>
+        <item>It\'s a Party!</item>
+        <item>Come &amp; Join the Fun!</item>
+        <item>It\'s a Party Invitation!</item>
+        <item>Please join us for a Christmas.</item>
+        <item>We\'ll be elated to have you as our guest!</item>
+        <item>Let\'s Celebrate Chrisma\'s.</item>
+        <item>Halloween is near!!!</item>
+        <item>Happy New Year!</item>
+        <item>You are invited on new year eve!</item>
+        <item>Will you join us?</item>
+    </array>
+
+    <array name="ContentGeneral">
+        <item>Let\'s celebrate family and good food!Please join us for a Dinner.</item>
+        <item>We request the honor of your presence at our annual Christmas Gala.</item>
+        <item>It\'s almost the big day!Please join us on a Dinner Party.</item>
+        <item>Let\'s celebrate the moment and make it memorable. Please come on the Dinner Party!</item>
+        <item>BLACK CATS AND WITCHES BREW THIS HALLOWEEN PARTY INVITATION IS FOR YOU!</item>
+        <item>Please join us for a little cocktail and good cheer!</item>
+        <item>Christmas time is near, and we can\'t wait to share our happiness. Please join us for a jolly good dinner at Christmas.</item>
+        <item>We look forward to celebrate with you!Please join us on a Dinner!</item>
+        <item>Let\'s get together and have a party blast!Please join us on a dinner and cocktail!</item>
+        <item>To share our happiness. Please join us on the Cocktail, Dinner and Dancing!</item>
+        <item>Christmas Party at our house! Eggnog, snacks and reindeer games</item>
+        <item>It’s time again for Christmas Cheer! Let us gather again and celebrate with loved ones so dear!</item>
+        <item>Please join us on the sweetest celebration!You\'re invited on a Party.</item>
+        <item>It’s Halloween Time and We’re Having a Bash so Wear Your Best Costume To Our Fun Monster Mash</item>
+        <item>We request the honor of your presence For a Christmas celebration filled with friends, frivolity and fancy fair</item>
+        <item>We invite you to celebrate the Party!Please join us on the event.</item>
+        <item>You\'re invited to come and join us on the Party!</item>
+        <item>Merry Christmas to all! Wishing you joy and good tidings! Please join, as we rejoice in our Lord and Savior.</item>
+        <item>PLEASE JOIN US FOR PUMPKIN STEW AND WITCHES BREW!</item>
+        <item>Request the honour of your presence on the party. Please come and join us!</item>
+        <item>You are cordially invited to an evening of Christmas celebration dinner and caroling.</item>
+        <item>It’s the most wonderful time of the year! Join us for a celebration of Christmas goodwill and cheer!</item>
+    </array>
+    
+    
+
+    <array name="TitleBirthday">
+        <item>B\'day Party Invitation!</item>
+        <item>First Birthday celebration!</item>
+        <item>It\'s Birthday</item>
+        <item>Birthday Celebration</item>
+        <item>21st Birthday Invitation Wording</item>
+        <item>Let\'s have a Blast!</item>
+        <item>You\'re Invited for Celebration</item>
+        <item>Girl\'s Birthday Invitation Wording</item>
+        <item>Let\'s Celebrate!</item>
+        <item>You\'re invited on B\'day!</item>
+        <item>Growing up is so much fun</item>
+    </array>
+
+    <array name="ContentBirthday">
+        <item>Join us for music, fun great food to eat. You\'re invited for birthday fun.This is a party you just can\'t skip.</item>
+        <item>Raise your glass and lend a cheer, My birthday is almost here. To have a guest like you would be a wonderful delight so please join us on this magical night.</item>
+        <item>It\'s my birthday and the time to have tons of fun and delight! Do join in the festivities and enjoy the happy times together!</item>
+        <item>Please be my guest at my birthday! We\'re having a party and hope you\'re coming!</item>
+        <item>You are cordially invited for Dinner and Drinks to celebrate B\'day bash.</item>
+        <item>It\'s time to cheer when friends are near to lift up a toast for me come and join me in my birthday party.</item>
+        <item>You are invited to join my birthday party let\'s have fun on the Big Day!</item>
+        <item>With the great joy, we invite you to share in B\'day celebration Dinner and Dancing.</item>
+        <item>Can\'t believe he has grown up so much! It\'s his 21st birthday, so please join us for a disco party.</item>
+        <item>I guess it\'s time to be rebellious And celebrate this transcendence With lots of fun But not without your presence.</item>
+        <item>Guess what? Another year has passed.Join us for a party as my mum is turning sixty.</item>
+    </array>
+
+    <array name="TitleKidsBirthday">
+        <item>Growing up is so much fun!</item>
+        <item>It\'s his First B\'day.</item>
+        <item>She is turning three this year.</item>
+        <item>B\'day Party Invitation!</item>
+        <item>First Birthday celebration!</item>
+        <item>It\'s Birthday of Princess</item>
+        <item>Birthday Celebration</item>
+        <item>Let\'s have a Blast!</item>
+        <item>Welcome to our angel\'s B\'day Party</item>
+        <item>Our little child has turned one!</item>
+        <item>You\'re Invited for Celebration</item>
+        <item>Our little child has turned Two!</item>
+        <item>Let\'s Celebrate!</item>
+        <item>You\'re invited on B\'day!</item>
+        <item>Our Princess is having a birthday Party.</item>
+
+    </array>
+
+    <array name="ContentKidsBirthday">
+        <item>There will be a birthday cake and, there\'ll be a clown Let\'s spread the news cross the town Our little one is turning five Please join us for fun and jive!</item>
+        <item>We will celebrate the birthday out in the sun with food, music and magic, It will be fun. We invite you to our son\'s birthday party!</item>
+        <item>Our little son/daughter is turning one Hope you\'ll be there to wish him/her a year full of fun!</item>
+        <item>Every year this day brings most happiness to us. It is our kid\'s birthday and you all are invited!</item>
+        <item>It seems like yesterday that our little one was born. Please join us for the grand celebration of the first birthday.</item>
+        <item>Join us for music, fun great food to eat. You\'re invited for birthday fun.This is a party you just can\'t skip.</item>
+        <item>It\'s my birthday and the time to have tons of fun and delight! Do join in the festivities and enjoy the happy times together!</item>
+        <item>Balloons and whistles, chocolates and candy, our darling is turning three. We are icing the birthday cake You are invited to celebrate!</item>
+        <item>Mickey mouse and Winnie the Pooh Our sweetie is turning two. Please join us to make it a grand celebration!</item>
+        <item>Please be my guest at my birthday! We\'re having a party and hope you\'re coming!</item>
+        <item>I learned to laugh and squeal, then sit and stand.Now I can walk if you hold my hand.B Come celebrate our buckaroo, (Name) is turning TWO!</item>
+        <item>You are invited to join my birthday party of our Prince let\'s have fun on the Big Daut the fun has only just begun....Look out, I\'m turning ONE!</item>
+        <item>Calling all cowboys, spurs, ropes &amp; cowboy hats. Saddle up Don\'t forget your chaps!y!</item>
+        <item>You\'re warmly invited to our baby\'s First Birthday celebration!.</item>
+        <item>You\'re invited to celebrate the first birthday of our son, (name of the celebrator).</item>
+        <item>With the great joy, we invite you to share in B\'day celebration Dinner and Dancing.It\'s My Baby\'s Birthday.</item>
+        <item>Not a year more, not a year less, (name of the celebrator) is turning three.Please come and make the celebration a memorable one for him/her.</item>
+        <item>There is not one but two birthday parties as our twins will celebrate their birthdays on (date). Please come for the double celebration.</item>
+        <item>Our little princess is turning three and we are organizing a fun tea party in her honor. You are cordially invited to it.</item>
+        <item>Come help us celebrate the special day with a cheerful party You\'re warmly invited to our baby\'s First Birthday celebration!</item>
+        <item>I guess it\'s time to be rebellious And celebrate this transcendence With lots of fun But not without your presence.</item>
+    </array>
+
+
+    <array name="TitleAnniversary">
+        <item>Anniversary Invitation!</item>
+        <item>You\'re invited</item>
+        <item>It\'s our Wedding Anniversary!</item>
+        <item>Anniversary Celebration</item>
+        <item>Celebrate with us</item>
+        <item>Wedding Anniversary</item>
+        <item>Celebrating Our Love</item>
+        <item>We are celebrating our Anniversary!</item>
+        <item>Happily ever after</item>
+        <item>It\'s an Anniversary Invitation</item>
+        <item>Wedding Anniversary Party!</item>
+        <item>Invitation</item>
+        <item>Let\'s Celebrate!</item>
+        <item>You\'re invited on our Anniversary!</item>
+    </array>
+
+    <array name="ContentAnniversary">
+        <item>Celebrating a love as pure and lasting as silver! Please join us on our Wedding Anniversary.</item>
+        <item>Please join us for anniversary celebration.</item>
+        <item>We request the pleasure of your company at the celebration of our Marriage Anniversary.</item>
+        <item>Please join us to celebrate our Wedding Anniversary.</item>
+        <item>You are cordially invited for Dinner and Drinks to celebrate our wedding anniversary.</item>
+        <item>We\'ve walked hand-in-hand down the path of life as husband and wife! Please join us for Dinner in honor of our wedding Anniversary.</item>
+        <item>You are most warmly invited at a Dinner Party. As we’re going to celebrate our Wedding Anniversary.</item>
+        <item>We invite you to join us for a dinner celebrating in honor of our Wedding Anniversary.</item>
+        <item>With the great joy, we invite you to share in our Wedding Anniversary celebration Dinner and Dancing.</item>
+        <item>The wine is poured and the table is set,for an anniversary party you will never forget ! Join us for Dinner.</item>
+        <item>We\'d like to share with you the joy and excitement of our wedding anniversary.Plz join us.</item>
+        <item>Come and join us as we celebrate 15 years of our love, marriage, and bonding with food, wine, and dancing.</item>
+        <item>To celebrate this special moment, we invite you to join us for food, music, and celebrations.</item>
+    </array>
+
+    <array name="TitleMarriage">
+        <item>Wedding Day!</item>
+        <item>Wedding Invitation</item>
+        <item>Wedding Card</item>
+        <item>You’re invited…</item>
+        <item>Save the Date</item>
+        <item>Please join us for the wedding</item>
+        <item>We’re getting married</item>
+        <item>Join us to celebrate</item>
+        <item>Wedding</item>
+    </array>
+
+    <array name="ContentMarriage">
+        <item>We request the honor of your presence on our marriage.</item>
+        <item>We request the pleasure of your company to celebrate our wedding.</item>
+        <item>Two loving heart are getting united and making a promise to be in love forever!</item>
+        <item>Save the date as you\'re invited on our wedding!</item>
+        <item>I have found the one whom my soul loves. And we’re going to tie the knots and request the pleasure of your presence on our Wedding.</item>
+        <item>We invite you to join us on our Wedding.</item>
+        <item>We have chosen the first day of our new life together. You are invited to share the joy of our wedding.</item>
+        <item>You are cordially invited on our wedding celebration.</item>
+        <item>Together with our parent request the honor of your presence on our wedding day.</item>
+        <item>We have decided to celebrate the first day of our wedding with friends and family. We request the honor of your presence at our wedding!</item>
+    </array>
+</resources>

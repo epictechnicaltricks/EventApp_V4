@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.infyson.invitationcard">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+
+    <application
+
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:supportsRtl="true">
+
+
+        <activity
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+
+            android:name=".activity.SelectCardActivity"
+            android:screenOrientation="portrait"
+            android:exported="true">
+
+        </activity>
+
+
+
+
+        <activity
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:name=".activity.ParthThemeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+
+            android:name=".activity.CardActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+        <activity
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:name=".activity.SelectTitleActivity"
+            android:label="Select Title"
+            android:screenOrientation="portrait" />
+        <activity
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:name=".activity.EnterDetailsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+
+            android:name=".activity.PreviewCardActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+
+        <activity
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:name=".activity.SplashScreenActivity"
+            android:screenOrientation="portrait"
+            android:exported="true"/>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.infyson.invitationcard.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
+
+        <meta-data
+            android:name="com.google.android.gms.ads.AD_MANAGER_APP"
+            android:value="true" />
+
+    </application>
+
+</manifest>

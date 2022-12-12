@@ -1,0 +1,45 @@
+<resources>
+    <string name="app_name">Infyson E-Invitation</string>
+
+    <string name="activity_select_title">Select Title</string>
+    <string name="activity_select_card">Select Your Design!</string>
+    <string name="activity_enter_card">Invitation Card</string>
+    <string name="activity_party_theme">Select Party Theme!</string>
+    <string name="activity_enter_details">Please Enter Details!</string>
+
+    <string name="select_title">Select Title</string>
+    <string name="title_preview">Title Preview</string>
+    <string name="select_message">Select Message</string>
+    <string name="message_preview">Message Preview</string>
+    <string name="next">Next</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
+    <string name="vanue">Vanue</string>
+    <string name="time">Time</string>
+    <string name="date">Date</string>
+    <string name="clear">Clear</string>
+    <string name="back">Back</string>
+
+
+    <string name="done">Done</string>
+    <string name="save">Save</string>
+    <string name="clear_all">Clear All</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
+    <string name="upload_dialog_title">Upload Image</string>
+    <string name="upload_picker_title">Select Picture</string>
+    <string name="directory_create_fail">Failed to create directory</string>
+    <string name="access_media_permissions_msg">To attach photos, we need to access media on your device</string>
+    <string name="continue_txt">Continue</string>
+    <string name="not_now">NOT NOW</string>
+    <string name="media_access_denied_msg">You denied storage access, no photos will be added.</string>
+
+    <string name="title_activity_splash_screen">SplashScreenActivity</string>
+
+    <!--Admob Test id's-->
+    <string name="admob_banner_id"></string>
+    <string name="admob_interstitial_id"></string>
+    <string name="admob_app_open_id"></string>
+    <string name="admob_native_advance_id"></string>
+
+</resources>
