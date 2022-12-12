@@ -8,7 +8,7 @@
 
     <color name="black">#000000</color>
     <color name="blue_color_picker">#0066FF</color>
-    <color name="brown_color_picker">#5D44E8</color> // this color
+    <color name="brown_color_picker">#AF593E</color>
     <color name="green_color_picker">#01A368</color>
     <color name="orange_color_picker">#FF861F</color>
     <color name="red_color_picker">#ED0A3F</color>

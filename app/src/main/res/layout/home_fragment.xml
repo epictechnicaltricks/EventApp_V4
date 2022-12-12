@@ -21,7 +21,7 @@
                 android:id="@+id/view_home"
                 android:layout_width="420dp"
                 android:layout_height="114dp"
-                android:background="@color/view_slider_home"
+                android:background="@drawable/gradient"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -92,7 +92,7 @@
                 <com.example.eventapp.util.EnchantedViewPager
                     android:id="@+id/viewPager_home"
                     android:layout_width="match_parent"
-                    android:layout_height="160dp"
+                    android:layout_height="200dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

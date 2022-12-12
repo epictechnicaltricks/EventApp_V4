@@ -183,12 +183,13 @@ public class HomeFragment extends Fragment {
         recyclerViewRecentView.setFocusable(false);
         recyclerViewRecentView.setNestedScrollingEnabled(false);
 
-        int columnWidth = method.getScreenWidth();
-        viewPager.setLayoutParams(new ConstraintLayout.LayoutParams(columnWidth, columnWidth / 2));
-        viewHome.setLayoutParams(new ConstraintLayout.LayoutParams(columnWidth, columnWidth / 2 - 60));
+       int columnWidth = method.getScreenWidth();
+      viewPager.setLayoutParams(new ConstraintLayout.LayoutParams(columnWidth, columnWidth / 2));
+       viewHome.setLayoutParams(new ConstraintLayout.LayoutParams(columnWidth, columnWidth / 2 - 60));
 
-        viewPager.useScale();
-        viewPager.removeAlpha();
+      //  viewPager.useScale();
+       // viewPager.useAlpha();
+        //viewPager.removeAlpha();
 
         editTextSearch.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
