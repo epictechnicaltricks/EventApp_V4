@@ -46,6 +46,7 @@ import com.google.android.material.textview.MaterialTextView;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+
 import org.greenrobot.eventbus.Subscribe;
 import org.jetbrains.annotations.NotNull;
 
@@ -65,6 +66,9 @@ public class HomeFragment extends Fragment {
     private TextInputEditText editTextSearch;
     private ImageView imageViewSearch;
     private EnchantedViewPager viewPager;
+
+
+
     private HomeCatAdapter homeCatAdapter;
     private HomeRecentAdapter homeRecentAdapter;
     private HomeNearByEvent homeNearByEvent;
@@ -75,6 +79,9 @@ public class HomeFragment extends Fragment {
     private MaterialTextView textViewCatSeeAll, textViewRecent, textViewNear;
 
     private CardView view_invitation;
+
+
+//    private SliderView imageSlider;
 
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -144,6 +151,10 @@ public class HomeFragment extends Fragment {
             }
         });
 
+
+//        imageSlider = view.findViewById(R.id.imageSlider);
+
+
         progressBar = view.findViewById(R.id.progressbar_home);
         conMain = view.findViewById(R.id.con_main_home);
         viewHome = view.findViewById(R.id.view_home);
@@ -184,12 +195,12 @@ public class HomeFragment extends Fragment {
         recyclerViewRecentView.setNestedScrollingEnabled(false);
 
        int columnWidth = method.getScreenWidth();
-      viewPager.setLayoutParams(new ConstraintLayout.LayoutParams(columnWidth, columnWidth / 2));
+       viewPager.setLayoutParams(new ConstraintLayout.LayoutParams(columnWidth, columnWidth / 2));
        viewHome.setLayoutParams(new ConstraintLayout.LayoutParams(columnWidth, columnWidth / 2 - 60));
 
-      //  viewPager.useScale();
-       // viewPager.useAlpha();
-        //viewPager.removeAlpha();
+        //  viewPager.useScale();
+        //  viewPager.useAlpha();
+        //  viewPager.removeAlpha();
 
         editTextSearch.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -297,6 +308,7 @@ public class HomeFragment extends Fragment {
                                 if (homeRP.getSliderLists().size() != 0) {
                                     sliderAdapter = new SliderAdapter(getActivity(), "slider", homeRP.getSliderLists(), onClick);
                                     viewPager.setAdapter(sliderAdapter);
+
                                 }
 
                                 if (homeRP.getCategoryLists().size() != 0) {

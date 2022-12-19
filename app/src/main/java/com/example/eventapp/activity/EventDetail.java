@@ -15,23 +15,29 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.print.PrintAttributes;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
@@ -51,13 +57,29 @@ import com.example.eventapp.util.Constant;
 import com.example.eventapp.util.Events;
 import com.example.eventapp.util.GlobalBus;
 import com.example.eventapp.util.Method;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.rd.PageIndicatorView;
@@ -68,6 +90,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Objects;
 
 import io.github.inflationx.viewpump.ViewPumpContextWrapper;
 import io.github.lizhangqu.coreprogress.ProgressHelper;
@@ -107,6 +135,47 @@ public class EventDetail extends AppCompatActivity {
     private MaterialTextView textViewTitle, textViewAddress, textViewEventDateTime, textViewRegisterEventDateTime, textViewTitleRemaining, textViewRemaining,
             textViewPhone, textViewEmail, textViewWeb, textViewPerson, textViewPrice;
 
+
+    private MaterialButton submit_msg;
+
+    TextInputEditText message;
+
+    ArrayList<HashMap<String, Object>> firebase_msg_list = new ArrayList<>();
+    ArrayList<HashMap<String, Object>> firebase_image_list = new ArrayList<>();
+
+    ////////////////////////////////////////
+    /** FIREBASE **/
+
+
+    public final int REQ_CD_FP = 101;
+
+    private FirebaseDatabase _firebase = FirebaseDatabase.getInstance();
+    private FirebaseStorage _firebase_storage = FirebaseStorage.getInstance();
+
+    private DatabaseReference user = _firebase.getReference("user");
+    private ChildEventListener _user_child_listener;
+
+
+    private DatabaseReference fb_images = _firebase.getReference("images");
+    private ChildEventListener _fb_images_child_listener;
+    
+    private Intent fp = new Intent(Intent.ACTION_GET_CONTENT);
+    private StorageReference img_db = _firebase_storage.getReference("img_db");
+    private OnCompleteListener<Uri> _img_db_upload_success_listener;
+    private OnSuccessListener<FileDownloadTask.TaskSnapshot> _img_db_download_success_listener;
+    private OnSuccessListener _img_db_delete_success_listener;
+    private OnProgressListener _img_db_upload_progress_listener;
+    private OnProgressListener _img_db_download_progress_listener;
+    private OnFailureListener _img_db_failure_listener;
+
+    private Calendar c = Calendar.getInstance();
+
+    RecyclerView recyclerview1,recyclerview2;
+
+    ////////////////////////////////////////
+    /** FIREBASE **/
+
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase));
@@ -116,6 +185,188 @@ public class EventDetail extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_detail);
+
+        FirebaseApp.initializeApp(this);
+
+        recyclerview1 = findViewById(R.id.recyclerview1_msg);
+        recyclerview2 = findViewById(R.id.recyclerview1_photos);
+
+
+         _user_child_listener = new ChildEventListener() {
+    @Override
+    public void onChildAdded(@NonNull DataSnapshot _param1, @Nullable String s) {
+
+        GenericTypeIndicator<HashMap<String, Object>> _ind = new GenericTypeIndicator<HashMap<String, Object>>() {};
+        final String _childKey = _param1.getKey();
+        final HashMap<String, Object> _childValue = _param1.getValue(_ind);
+
+        user.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot _dataSnapshot) {
+                firebase_msg_list = new ArrayList<>();
+                try {
+                    GenericTypeIndicator<HashMap<String, Object>> _ind = new GenericTypeIndicator<HashMap<String, Object>>() {};
+                    for (DataSnapshot _data : _dataSnapshot.getChildren()) {
+                        HashMap<String, Object> _map = _data.getValue(_ind);
+                        firebase_msg_list.add(_map);
+                    }
+                }
+                catch (Exception _e) {
+                    _e.printStackTrace();
+                }
+
+                Collections.reverse(firebase_msg_list);
+                recyclerview1.setAdapter(new Recyclerview1Adapter(firebase_msg_list));
+                recyclerview1.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                recyclerview1.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL, false));
+
+            }
+            @Override
+            public void onCancelled(DatabaseError _databaseError) {
+
+                Toast.makeText(EventDetail.this, _databaseError.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+
+       // Toast.makeText(EventDetail.this, "Added", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+
+
+    }
+
+    @Override
+    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+    }
+
+    @Override
+    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+    }
+
+    @Override
+    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        Toast.makeText(EventDetail.this, databaseError.toString(), Toast.LENGTH_SHORT).show();
+
+    }
+};
+
+
+         user.addChildEventListener(_user_child_listener);
+
+
+
+
+
+
+    _fb_images_child_listener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(@NonNull DataSnapshot _param1, @Nullable String s) {
+            GenericTypeIndicator<HashMap<String, Object>> _ind = new GenericTypeIndicator<HashMap<String, Object>>() {};
+            final String _childKey = _param1.getKey();
+            final HashMap<String, Object> _childValue = _param1.getValue(_ind);
+
+           fb_images.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot _dataSnapshot) {
+                    firebase_image_list = new ArrayList<>();
+                    try {
+                        GenericTypeIndicator<HashMap<String, Object>> _ind = new GenericTypeIndicator<HashMap<String, Object>>() {};
+                        for (DataSnapshot _data : _dataSnapshot.getChildren()) {
+                            HashMap<String, Object> _map = _data.getValue(_ind);
+                            firebase_image_list.add(_map);
+                        }
+                    }
+                    catch (Exception _e) {
+                        _e.printStackTrace();
+                    }
+
+                    Collections.reverse(firebase_image_list);
+                    recyclerview2.setAdapter(new Recyclerview2Adapter(firebase_image_list));
+                    recyclerview2.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                    recyclerview2.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL, false));
+
+                }
+                @Override
+                public void onCancelled(DatabaseError _databaseError) {
+
+                    Toast.makeText(EventDetail.this, _databaseError.toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+
+        }
+
+        @Override
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+        }
+
+        @Override
+        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
+    fb_images.addChildEventListener(_fb_images_child_listener);
+    
+      
+        //////////////////
+
+
+        submit_msg = findViewById(R.id.submit);
+        message =findViewById(R.id.message_);
+
+
+        submit_msg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                HashMap<String, Object> a;
+                a = new HashMap<>();
+                c = Calendar.getInstance();
+                a.put("date",new SimpleDateFormat("dd MMM yyyy").format(c.getTime()));
+                a.put("id", method.userId());
+                a.put("name","Demo user");
+                a.put("user_img",method.userImage.trim());
+                a.put("msg", message.getText().toString());
+                a.put("img_url", "https://wallpaperaccess.com/full/8053661.jpg");
+                user.push().updateChildren(a);
+                //user.child("1").updateChildren(a);
+                a.clear();
+                HashMap<String, Object> a2;
+                a2 = new HashMap<>();
+                c = Calendar.getInstance();
+                a2.put("upload_on",new SimpleDateFormat("dd MMM yyyy").format(c.getTime()));
+                a2.put("img_url", "https://wallpaperaccess.com/full/8053661.jpg");
+                fb_images.push().updateChildren(a);
+                a2.clear();
+
+
+            }
+        });
+
+
+
+
+        ///////////
+
 
         onClick = (position, type, title, id) -> {
             switch (type) {
@@ -257,6 +508,186 @@ public class EventDetail extends AppCompatActivity {
         button.setVisibility(View.GONE);
         callData();
     }
+
+    public class Recyclerview1Adapter extends RecyclerView.Adapter<Recyclerview1Adapter.ViewHolder> {
+        ArrayList<HashMap<String, Object>> _data;
+        public Recyclerview1Adapter(ArrayList<HashMap<String, Object>> _arr) {
+            _data = _arr;
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater _inflater = (LayoutInflater)getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View _v = _inflater.inflate(R.layout.custom_msg_event_details, null);
+            RecyclerView.LayoutParams _lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            _v.setLayoutParams(_lp);
+            return new ViewHolder(_v);
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder _holder, final int _position) {
+            View _view = _holder.itemView;
+
+
+
+            final TextView user_name = _view.findViewById(R.id.user_name);
+            final TextView message = _view.findViewById(R.id.message);
+            final TextView more_ = _view.findViewById(R.id.more_);
+
+            final TextView date = _view.findViewById(R.id.date);
+
+
+
+          // message.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/montserrat_regular.ttf"), Typeface.NORMAL);
+          // view.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/montserrat_regular.ttf"), Typeface.NORMAL);
+          // user_name.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/montserrat_regular.ttf"), Typeface.BOLD);
+
+
+            try{
+
+
+                message.setText(Objects.requireNonNull(firebase_msg_list.get(_position).get("msg")).toString());
+                user_name.setText(Objects.requireNonNull(firebase_msg_list.get(_position).get("name")).toString());
+
+
+               date.setText(Objects.requireNonNull(firebase_msg_list.get(_position).get("date")).toString());
+
+
+                if(Objects.requireNonNull(firebase_msg_list.get(_position).get("msg")).toString().length()>150)
+                {
+                    more_.setVisibility(View.VISIBLE);
+                }else {
+
+                    more_.setVisibility(View.INVISIBLE);
+                }
+
+
+            more_.setOnClickListener(v ->
+
+                    method.alertBox(Objects.requireNonNull(firebase_msg_list.get(_position).get("msg")).toString()));
+
+
+
+               /* api_map3 = new Gson().fromJson(Objects.requireNonNull(listmap2.get(_position).get("img_url")).toString(), new TypeToken<HashMap<String, Object>>(){}.getType());
+
+
+                String img_url = Objects.requireNonNull(api_map3.get("img_url")).toString();
+
+                Glide.with(getApplicationContext())
+                        .load(Uri.parse(img_url))
+                        .error(R.drawable.school2)
+                        .placeholder(R.drawable.school2)
+                        .thumbnail(0.01f)
+                        .into(imageview2);*/
+
+
+				/*ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+				ClipData clip = ClipData.newPlainText("Copied Text", img_url );
+				clipboard.setPrimaryClip(clip);
+
+				Log.d("img_obj", img_url);*/
+
+
+
+            }catch (Exception e)
+            {
+                //showMessage("887 line "+e.toString());
+            }
+
+
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return _data.size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder{
+            public ViewHolder(View v){
+                super(v);
+            }
+        }
+
+    }
+
+    public class Recyclerview2Adapter extends RecyclerView.Adapter<Recyclerview2Adapter.ViewHolder> {
+        ArrayList<HashMap<String, Object>> _data;
+        public Recyclerview2Adapter(ArrayList<HashMap<String, Object>> _arr) {
+            _data = _arr;
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater _inflater = (LayoutInflater)getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View _v = _inflater.inflate(R.layout.custom_image_event_details, null);
+            RecyclerView.LayoutParams _lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            _v.setLayoutParams(_lp);
+            return new ViewHolder(_v);
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder _holder, final int _position) {
+            View _view = _holder.itemView;
+
+
+
+        final ImageView img_ = _view.findViewById(R.id.img_events);
+
+           try{
+
+
+              //  message.setText(Objects.requireNonNull(firebase_msg_list.get(_position).get("msg")).toString());
+
+              String img_url = Objects.requireNonNull(firebase_image_list.get(_position).get("img_url")).toString();
+
+
+               Glide.with(getApplicationContext()).load(Uri.parse(img_url)).thumbnail(0.1f).into(img_);
+
+
+
+               img_.setOnClickListener(new View.OnClickListener() {
+                   @Override
+                   public void onClick(View v) {
+                       Intent i = new Intent();
+                       i.putExtra("img",img_url);
+                       i.setClass(getApplicationContext(), view_img.class);
+                       startActivity(i);
+                   }
+               });
+
+
+				/*ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+				ClipData clip = ClipData.newPlainText("Copied Text", img_url );
+				clipboard.setPrimaryClip(clip);
+
+				Log.d("img_obj", img_url);*/
+
+
+
+            }catch (Exception e) {
+
+                //showMessage("887 line "+e.toString());
+            }
+
+
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return _data.size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder{
+            public ViewHolder(View v){
+                super(v);
+            }
+        }
+
+    }
+
+
 
     private void callData() {
         new Handler().postDelayed(() -> {
@@ -766,6 +1197,7 @@ public class EventDetail extends AppCompatActivity {
 
     }
 
+
     public void ticketPdf(String ticketId) {
 
         progressDialog.show();
@@ -835,6 +1267,7 @@ public class EventDetail extends AppCompatActivity {
         });
 
     }
+
 
     public void userList(String eventId) {
 

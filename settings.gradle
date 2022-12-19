@@ -2,3 +2,4 @@ include ':library'
 include ':app', ':SmoothCheckBox-master', ':bottomnavbar', ':pdfgenerator'
 include ':photoeditorsdk'
 include ':app_invitation'
+

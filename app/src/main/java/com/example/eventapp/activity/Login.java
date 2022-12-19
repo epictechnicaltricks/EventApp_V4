@@ -410,6 +410,8 @@ public class Login extends AppCompatActivity {
 
     }
 
+
+    //////////////////////// register_social_media
     @SuppressLint("HardwareIds")
     public void registerSocialNetwork(String id, String sendName, String sendEmail, final String type) {
 
@@ -489,6 +491,7 @@ public class Login extends AppCompatActivity {
 
     private void failLogin(String type) {
         if (type.equals("google")) {
+
             mGoogleSignInClient.signOut()
                     .addOnCompleteListener(Login.this, task -> {
                         method.editor.putBoolean(method.pref_login, false);

@@ -15,6 +15,7 @@ public class ContactList implements Serializable {
     public ContactList(String id, String subject) {
         this.id = id;
         this.subject = subject;
+
     }
 
     public String getId() {

@@ -533,10 +533,13 @@ public class CreateEvent extends AppCompatActivity {
     }
 
     private void chooseGalleryImage() {
+
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_GALLERY_IMAGE_PICKER);
+
+
     }
 
     private void setGalleryImage() {

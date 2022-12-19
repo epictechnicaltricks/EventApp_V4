@@ -105,7 +105,18 @@ dependencies {
     implementation project(path: ':library')
     implementation project(path: ':app_invitation')
 
-    implementation 'com.github.smarteist:autoimageslider:1.4.0-appcompat'
-    implementation 'androidx.multidex:multidex:2.0.1'
+
+
+    // firebase  storage and db
+    implementation 'com.google.firebase:firebase-database:19.0.0'
+    implementation 'com.google.firebase:firebase-storage:19.0.0'
+    implementation 'com.google.code.gson:gson:2.8.7'
+
+
+
+   // implementation 'com.github.smarteist:autoimageslider:1.4.0'
+
+
+
 }
 
