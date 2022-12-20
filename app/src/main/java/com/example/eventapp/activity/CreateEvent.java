@@ -304,10 +304,13 @@ public class CreateEvent extends AppCompatActivity {
             };
             DatePickerDialog dpd;
             if (type.equals("create_event")) {
+
                 dpd = DatePickerDialog.newInstance(onDateSetListener,
                         now.get(Calendar.YEAR),
                         now.get(Calendar.MONTH),
                         now.get(Calendar.DAY_OF_MONTH));
+
+
             } else {
                 dpd = DatePickerDialog.newInstance(onDateSetListener, calYerStart, calMonthStart, calDayStart,
                         calYerEnd, calMonthEnd, calDayEnd);
@@ -451,10 +454,14 @@ public class CreateEvent extends AppCompatActivity {
                             .load(Uri.fromFile(new File(pathBanner)))
                             .placeholder(R.drawable.placeholder_logo).into(imageViewBanner);
                 } else {
+
                     method.alertBox(getResources().getString(R.string.upload_folder_error));
+
                 }
             } catch (Exception e) {
+
                 method.alertBox(getResources().getString(R.string.upload_folder_error));
+
             }
         }
         if (requestCode == REQUEST_LOGO_IMAGE_PICKER && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {

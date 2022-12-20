@@ -2,8 +2,10 @@ package com.example.eventapp.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.print.PrintAttributes;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,9 +45,11 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
 import com.example.eventapp.R;
+import com.example.eventapp.adapter.EventGalleryAdapter;
 import com.example.eventapp.adapter.GalleryAdapter;
 import com.example.eventapp.fragment.ReportFragment;
 import com.example.eventapp.interFace.OnClick;
+import com.example.eventapp.item.GalleryList;
 import com.example.eventapp.response.DataRP;
 import com.example.eventapp.response.EventDetailRP;
 import com.example.eventapp.response.TicketDownloadRP;
@@ -55,11 +60,15 @@ import com.example.eventapp.rest.ApiInterface;
 import com.example.eventapp.util.API;
 import com.example.eventapp.util.Constant;
 import com.example.eventapp.util.Events;
+import com.example.eventapp.util.FileUtil;
+import com.example.eventapp.util.GetPath;
 import com.example.eventapp.util.GlobalBus;
 import com.example.eventapp.util.Method;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -80,6 +89,7 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.rd.PageIndicatorView;
@@ -95,6 +105,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 import io.github.inflationx.viewpump.ViewPumpContextWrapper;
@@ -136,7 +147,7 @@ public class EventDetail extends AppCompatActivity {
             textViewPhone, textViewEmail, textViewWeb, textViewPerson, textViewPrice;
 
 
-    private MaterialButton submit_msg;
+    private MaterialButton submit_msg, add_photo;
 
     TextInputEditText message;
 
@@ -146,7 +157,7 @@ public class EventDetail extends AppCompatActivity {
     ////////////////////////////////////////
     /** FIREBASE **/
 
-
+    private int REQUEST_GALLERY_IMAGE_PICKER = 110;
     public final int REQ_CD_FP = 101;
 
     private FirebaseDatabase _firebase = FirebaseDatabase.getInstance();
@@ -159,7 +170,29 @@ public class EventDetail extends AppCompatActivity {
     private DatabaseReference fb_images = _firebase.getReference("images");
     private ChildEventListener _fb_images_child_listener;
     
+
+
+    private Calendar c = Calendar.getInstance();
+
+    RecyclerView recyclerview1,recyclerview2;
+
+
+
+
+
+    //////////////// pick the files from gallary
+
     private Intent fp = new Intent(Intent.ACTION_GET_CONTENT);
+    private String path = "";
+    private final ArrayList<HashMap<String, Object>> galleryLists = new ArrayList<>();
+    RecyclerView recyclerview3;
+
+    ////////////////////////////////////////
+
+
+
+    //upload firebase storege
+
     private StorageReference img_db = _firebase_storage.getReference("img_db");
     private OnCompleteListener<Uri> _img_db_upload_success_listener;
     private OnSuccessListener<FileDownloadTask.TaskSnapshot> _img_db_download_success_listener;
@@ -168,12 +201,16 @@ public class EventDetail extends AppCompatActivity {
     private OnProgressListener _img_db_download_progress_listener;
     private OnFailureListener _img_db_failure_listener;
 
-    private Calendar c = Calendar.getInstance();
+    final ProgressDialog progressDialog_upload = new ProgressDialog(this);
 
-    RecyclerView recyclerview1,recyclerview2;
 
-    ////////////////////////////////////////
+    ///////////////////
     /** FIREBASE **/
+
+
+
+
+
 
 
     @Override
@@ -188,11 +225,66 @@ public class EventDetail extends AppCompatActivity {
 
         FirebaseApp.initializeApp(this);
 
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+
+
+        recyclerview3 = findViewById(R.id.selected_img_recycler);
         recyclerview1 = findViewById(R.id.recyclerview1_msg);
         recyclerview2 = findViewById(R.id.recyclerview1_photos);
 
 
-         _user_child_listener = new ChildEventListener() {
+
+
+        _img_db_upload_progress_listener = new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(UploadTask.TaskSnapshot _param1) {
+                double _progressValue = (100.0 * _param1.getBytesTransferred()) / _param1.getTotalByteCount();
+
+            }
+        };
+
+        _img_db_download_progress_listener = new OnProgressListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(FileDownloadTask.TaskSnapshot _param1) {
+                double _progressValue = (100.0 * _param1.getBytesTransferred()) / _param1.getTotalByteCount();
+
+            }
+        };
+
+        _img_db_upload_success_listener = new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(Task<Uri> _param1) {
+                final String _downloadUrl = _param1.getResult().toString();
+
+            }
+        };
+
+        _img_db_download_success_listener = new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(FileDownloadTask.TaskSnapshot _param1) {
+                final long _totalByteCount = _param1.getTotalByteCount();
+
+            }
+        };
+
+        _img_db_delete_success_listener = new OnSuccessListener() {
+            @Override
+            public void onSuccess(Object _param1) {
+
+            }
+        };
+
+        _img_db_failure_listener = new OnFailureListener() {
+            @Override
+            public void onFailure(Exception _param1) {
+                final String _message = _param1.getMessage();
+               method.alertBox(_message);
+            }
+        };
+
+
+        _user_child_listener = new ChildEventListener() {
     @Override
     public void onChildAdded(@NonNull DataSnapshot _param1, @Nullable String s) {
 
@@ -257,12 +349,12 @@ public class EventDetail extends AppCompatActivity {
 
     }
 };
-
-
          user.addChildEventListener(_user_child_listener);
 
 
 
+        fp.setType("image/*");
+        fp.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
 
 
 
@@ -331,8 +423,16 @@ public class EventDetail extends AppCompatActivity {
 
 
         submit_msg = findViewById(R.id.submit);
+        add_photo = findViewById(R.id.upload);
         message =findViewById(R.id.message_);
 
+
+        add_photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(fp, REQ_CD_FP);
+            }
+        });
 
         submit_msg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -350,13 +450,7 @@ public class EventDetail extends AppCompatActivity {
                 user.push().updateChildren(a);
                 //user.child("1").updateChildren(a);
                 a.clear();
-                HashMap<String, Object> a2;
-                a2 = new HashMap<>();
-                c = Calendar.getInstance();
-                a2.put("upload_on",new SimpleDateFormat("dd MMM yyyy").format(c.getTime()));
-                a2.put("img_url", "https://wallpaperaccess.com/full/8053661.jpg");
-                fb_images.push().updateChildren(a);
-                a2.clear();
+
 
 
             }
@@ -493,6 +587,48 @@ public class EventDetail extends AppCompatActivity {
 
     }
 
+
+
+    private void upload_img_get_urls(){
+
+
+
+        for(int x =0; galleryLists.size()>x; x++){
+
+
+           String  img_path = Objects.requireNonNull(Objects.requireNonNull(galleryLists.get(x).get("path_url")).toString());
+
+           uploadThisImage(img_path);
+           c = Calendar.getInstance();
+
+
+        }
+
+
+
+
+
+
+
+    }
+
+
+    private void uploadThisImage(String imagefilepath){
+
+        img_db.child(new SimpleDateFormat("hh:mm:ss,dd-MMM-yyyy")
+                        .format(c.getTime()))
+                .putFile(Uri.fromFile(new File(imagefilepath)))
+                .addOnFailureListener(_img_db_failure_listener)
+                .addOnProgressListener(_img_db_upload_progress_listener)
+                .continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                    @Override
+                    public Task<Uri> then(Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        return img_db.child(new SimpleDateFormat("hh:mm:ss,dd-MMM-yyyy").format(c.getTime())).getDownloadUrl();
+                    }
+                }).addOnCompleteListener(_img_db_upload_success_listener);
+
+    }
+
     @Subscribe
     public void getNotify(Events.EventUpdateDetail eventUpdateDetail) {
         coordinatorLayout.setVisibility(View.GONE);
@@ -508,6 +644,54 @@ public class EventDetail extends AppCompatActivity {
         button.setVisibility(View.GONE);
         callData();
     }
+
+    @Override
+    protected void onActivityResult(int _requestCode, int _resultCode, @Nullable Intent _data) {
+        super.onActivityResult(_requestCode, _resultCode, _data);
+        if (_requestCode == REQ_CD_FP) {
+            if (_resultCode == Activity.RESULT_OK) {
+                ArrayList<String> _filePath = new ArrayList<>();
+                if (_data != null) {
+                    if (_data.getClipData() != null) {
+                        for (int _index = 0; _index < _data.getClipData().getItemCount(); _index++) {
+                            ClipData.Item _item = _data.getClipData().getItemAt(_index);
+                            _filePath.add(FileUtil.convertUriToFilePath(getApplicationContext(), _item.getUri()));
+                        }
+                    } else {
+                        _filePath.add(FileUtil.convertUriToFilePath(getApplicationContext(), _data.getData()));
+                    }
+                }
+                //c = Calendar.getInstance();
+                //path = _filePath.get((int) (0));
+
+                galleryLists.clear();
+                for(int x=0; _filePath.size()>x; x++){
+
+
+                    HashMap<String, Object> path_map = new HashMap<>();
+                    path_map.put("path_url",_filePath.get(x));
+                    galleryLists.add(path_map);
+                }
+
+
+
+               // Collections.reverse(galleryLists);
+                recyclerview3.setAdapter(new Recyclerview3Adapter(galleryLists));
+                recyclerview3.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                recyclerview3.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL, false));
+
+
+                     } else {
+
+            }
+        }
+
+
+    }
+
+
+
+
 
     public class Recyclerview1Adapter extends RecyclerView.Adapter<Recyclerview1Adapter.ViewHolder> {
         ArrayList<HashMap<String, Object>> _data;
@@ -655,6 +839,110 @@ public class EventDetail extends AppCompatActivity {
                        startActivity(i);
                    }
                });
+
+
+				/*ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+				ClipData clip = ClipData.newPlainText("Copied Text", img_url );
+				clipboard.setPrimaryClip(clip);
+
+				Log.d("img_obj", img_url);*/
+
+
+
+            }catch (Exception e) {
+
+                //showMessage("887 line "+e.toString());
+            }
+
+
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return _data.size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder{
+            public ViewHolder(View v){
+                super(v);
+            }
+        }
+
+    }
+
+
+    public class Recyclerview3Adapter extends RecyclerView.Adapter<Recyclerview3Adapter.ViewHolder> {
+        ArrayList<HashMap<String, Object>> _data;
+        public Recyclerview3Adapter(ArrayList<HashMap<String, Object>> _arr) {
+            _data = _arr;
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater _inflater = (LayoutInflater)getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+
+
+            View _v = _inflater.inflate(R.layout.selected_img_custom, parent, false);
+            RecyclerView.LayoutParams _lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            _v.setLayoutParams(_lp);
+            return new ViewHolder(_v);
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder _holder, final int _position) {
+            View _view = _holder.itemView;
+
+
+
+            final ImageView selected_img = _view.findViewById(R.id.selected_img);
+            final ImageView delete = _view.findViewById(R.id.cancel_img);
+
+
+
+            try{
+
+
+
+                //  message.setText(Objects.requireNonNull(firebase_msg_list.get(_position).get("msg")).toString());
+
+                String img_path_ = Objects.requireNonNull(Objects.requireNonNull(galleryLists.get(_position).get("path_url")).toString());
+
+                selected_img.setImageBitmap(FileUtil.decodeSampleBitmapFromPath(img_path_,1024,1024));
+
+
+                selected_img.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        Intent intent = new Intent();
+                        intent.setAction(android.content.Intent.ACTION_VIEW);
+                        Uri uri = Uri.parse("file://" + img_path_);
+                        intent.setDataAndType(uri,"image/*");
+                        startActivity(intent);
+
+
+                    }
+                });
+
+
+
+                delete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        galleryLists.remove(_position);
+
+                        //Collections.reverse(galleryLists);
+                        recyclerview3.setAdapter(new Recyclerview3Adapter(galleryLists));
+                        recyclerview3.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                        recyclerview3.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL, false));
+
+
+
+                    }
+                });
 
 
 				/*ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);

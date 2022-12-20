@@ -3,6 +3,7 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
+	android:background="#000"
 	android:layout_height="match_parent"
 	android:orientation="vertical">
 	<RelativeLayout
@@ -12,16 +13,20 @@
 		android:background="#000000"
 		android:orientation="vertical">
 		<WebView
+			android:background="#000"
 			android:id="@+id/webview1"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent" />
 		<LinearLayout
+			android:background="#000"
 			android:id="@+id/progress"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:padding="8dp"
 			android:gravity="center_horizontal|center_vertical"
 			android:orientation="horizontal">
+
+
 			<ProgressBar
 				android:id="@+id/progressbar1"
 				android:layout_width="match_parent"

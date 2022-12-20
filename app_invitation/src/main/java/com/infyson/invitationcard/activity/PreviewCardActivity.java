@@ -122,6 +122,7 @@ public class PreviewCardActivity extends Activity {
         iv_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent share = new Intent(Intent.ACTION_SEND);
                 share.setType("image/jpeg");
                 share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(picture));
