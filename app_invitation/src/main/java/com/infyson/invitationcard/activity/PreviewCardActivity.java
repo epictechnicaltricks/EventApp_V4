@@ -33,9 +33,12 @@ public class PreviewCardActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview_card);
 
+
+
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
-        
+
+
 
         init();
         Intent intent = getIntent();

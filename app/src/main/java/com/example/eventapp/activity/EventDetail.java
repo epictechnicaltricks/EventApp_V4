@@ -15,7 +15,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.StrictMode;
 import android.print.PrintAttributes;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -45,11 +44,9 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
 import com.example.eventapp.R;
-import com.example.eventapp.adapter.EventGalleryAdapter;
 import com.example.eventapp.adapter.GalleryAdapter;
 import com.example.eventapp.fragment.ReportFragment;
 import com.example.eventapp.interFace.OnClick;
-import com.example.eventapp.item.GalleryList;
 import com.example.eventapp.response.DataRP;
 import com.example.eventapp.response.EventDetailRP;
 import com.example.eventapp.response.TicketDownloadRP;
@@ -61,7 +58,6 @@ import com.example.eventapp.util.API;
 import com.example.eventapp.util.Constant;
 import com.example.eventapp.util.Events;
 import com.example.eventapp.util.FileUtil;
-import com.example.eventapp.util.GetPath;
 import com.example.eventapp.util.GlobalBus;
 import com.example.eventapp.util.Method;
 import com.google.android.gms.tasks.Continuation;
@@ -100,13 +96,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import io.github.inflationx.viewpump.ViewPumpContextWrapper;
 import io.github.lizhangqu.coreprogress.ProgressHelper;
@@ -122,6 +119,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class EventDetail extends AppCompatActivity {
+
+
+
 
     private Method method;
     private OnClick onClick;
@@ -172,6 +172,7 @@ public class EventDetail extends AppCompatActivity {
     
 
 
+
     private Calendar c = Calendar.getInstance();
 
     RecyclerView recyclerview1,recyclerview2;
@@ -185,6 +186,7 @@ public class EventDetail extends AppCompatActivity {
     private Intent fp = new Intent(Intent.ACTION_GET_CONTENT);
     private String path = "";
     private final ArrayList<HashMap<String, Object>> galleryLists = new ArrayList<>();
+
     RecyclerView recyclerview3;
 
     ////////////////////////////////////////
@@ -197,12 +199,24 @@ public class EventDetail extends AppCompatActivity {
     private OnCompleteListener<Uri> _img_db_upload_success_listener;
     private OnSuccessListener<FileDownloadTask.TaskSnapshot> _img_db_download_success_listener;
     private OnSuccessListener _img_db_delete_success_listener;
-    private OnProgressListener _img_db_upload_progress_listener;
-    private OnProgressListener _img_db_download_progress_listener;
+    private OnProgressListener<UploadTask.TaskSnapshot> _img_db_upload_progress_listener;
+    private OnProgressListener<FileDownloadTask.TaskSnapshot> _img_db_download_progress_listener;
     private OnFailureListener _img_db_failure_listener;
 
-    final ProgressDialog progressDialog_upload = new ProgressDialog(this);
 
+    private TimerTask upload_scheduler;
+    private final Timer _timer = new Timer();
+    private ArrayList<String> firebase_imgurl_list = new ArrayList<>();
+
+    boolean next_upload = true;
+
+    ProgressDialog progressDoalog;
+    ///private final ProgressDialog progressDialog_upload = new ProgressDialog(EventDetail.this);
+
+
+
+
+    int galleryList_position=0;
 
     ///////////////////
     /** FIREBASE **/
@@ -225,9 +239,7 @@ public class EventDetail extends AppCompatActivity {
 
         FirebaseApp.initializeApp(this);
 
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());
-
+        progressDoalog = new ProgressDialog(EventDetail.this);
 
         recyclerview3 = findViewById(R.id.selected_img_recycler);
         recyclerview1 = findViewById(R.id.recyclerview1_msg);
@@ -236,52 +248,7 @@ public class EventDetail extends AppCompatActivity {
 
 
 
-        _img_db_upload_progress_listener = new OnProgressListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onProgress(UploadTask.TaskSnapshot _param1) {
-                double _progressValue = (100.0 * _param1.getBytesTransferred()) / _param1.getTotalByteCount();
 
-            }
-        };
-
-        _img_db_download_progress_listener = new OnProgressListener<FileDownloadTask.TaskSnapshot>() {
-            @Override
-            public void onProgress(FileDownloadTask.TaskSnapshot _param1) {
-                double _progressValue = (100.0 * _param1.getBytesTransferred()) / _param1.getTotalByteCount();
-
-            }
-        };
-
-        _img_db_upload_success_listener = new OnCompleteListener<Uri>() {
-            @Override
-            public void onComplete(Task<Uri> _param1) {
-                final String _downloadUrl = _param1.getResult().toString();
-
-            }
-        };
-
-        _img_db_download_success_listener = new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(FileDownloadTask.TaskSnapshot _param1) {
-                final long _totalByteCount = _param1.getTotalByteCount();
-
-            }
-        };
-
-        _img_db_delete_success_listener = new OnSuccessListener() {
-            @Override
-            public void onSuccess(Object _param1) {
-
-            }
-        };
-
-        _img_db_failure_listener = new OnFailureListener() {
-            @Override
-            public void onFailure(Exception _param1) {
-                final String _message = _param1.getMessage();
-               method.alertBox(_message);
-            }
-        };
 
 
         _user_child_listener = new ChildEventListener() {
@@ -434,11 +401,90 @@ public class EventDetail extends AppCompatActivity {
             }
         });
 
+
+
+
+
+
         submit_msg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                HashMap<String, Object> a;
+
+
+
+
+                if(galleryLists.size()>0){
+
+
+                    progressDoalog.setMax(100);
+                    progressDoalog.setMessage("Uploading..");
+                    progressDoalog.setCancelable(false);
+                    progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    progressDoalog.show();
+
+
+                 //  progressDialog_upload.setMessage("Uploading images..");
+                 //  progressDialog_upload.setMax(100);
+                 //  progressDialog_upload.setCancelable(false);
+                 //  progressDialog_upload.show();
+                    galleryList_position = 0;
+
+
+                  for (int x=0; x<galleryLists.size(); x++)
+                  {
+                      Log.d("paths", Objects.requireNonNull(galleryLists.get(x).get("path_url")).toString());
+                  }
+
+                    upload_scheduler = new TimerTask() {
+                        @Override
+                        public void run() {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+
+
+                                    if(next_upload) {
+
+                                        if (galleryList_position < galleryLists.size()) {
+
+                                            try {
+                                                progressDoalog.setMessage("Uploading "+(galleryList_position+1)+"/"+galleryLists.size());
+
+                                                uploadToFirebase(Objects.requireNonNull(galleryLists.get(0).get("path_url")).toString(),galleryList_position+ "img");
+
+
+                                                 galleryList_position++;
+                                                next_upload = false;
+
+
+                                            }catch (Exception e)
+                                            {
+                                                Log.d("upload_error",e.toString());
+                                            }
+
+
+                                        } else {
+
+                                            next_upload = false;
+                                            Toast.makeText(EventDetail.this, "Submitted", Toast.LENGTH_SHORT).show();
+                                            progressDoalog.dismiss();
+                                            upload_scheduler.cancel();
+
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    };
+                    _timer.scheduleAtFixedRate(upload_scheduler, 0, 100);
+
+
+
+                }
+
+
+              /*  HashMap<String, Object> a;
                 a = new HashMap<>();
                 c = Calendar.getInstance();
                 a.put("date",new SimpleDateFormat("dd MMM yyyy").format(c.getTime()));
@@ -449,7 +495,7 @@ public class EventDetail extends AppCompatActivity {
                 a.put("img_url", "https://wallpaperaccess.com/full/8053661.jpg");
                 user.push().updateChildren(a);
                 //user.child("1").updateChildren(a);
-                a.clear();
+                a.clear();*/
 
 
 
@@ -589,34 +635,75 @@ public class EventDetail extends AppCompatActivity {
 
 
 
-    private void upload_img_get_urls(){
+
+    private void uploadToFirebase(String imagefilepath_, String file_name){
 
 
 
-        for(int x =0; galleryLists.size()>x; x++){
 
 
-           String  img_path = Objects.requireNonNull(Objects.requireNonNull(galleryLists.get(x).get("path_url")).toString());
+        img_db.child(file_name)
+                .putFile(Uri.fromFile(new File(imagefilepath_)))
 
-           uploadThisImage(img_path);
-           c = Calendar.getInstance();
 
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                img_db.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+
+                        Log.d("paths success",uri.toString());
+                    }
+                });
+                next_upload = true;
+                Log.d("paths success","onSuccess");
+
+            }
+        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+
+                Log.d("paths success","On progress ");
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+                Log.d("paths Failure","Uploading Failed !!");
+
+            }
+        });
+    }
+
+
+/*    private void uploadThisImage(Object imagefilepath_ , String filename_){
+
+
+        Toast.makeText(EventDetail.this, imagefilepath_.toString(), Toast.LENGTH_SHORT).show();
+
+
+        c = Calendar.getInstance();
+
+        ///new SimpleDateFormat("hh:mm:ss,dd-MMM-yyyy").format(String.valueOf((long)(c.getTimeInMillis())))
+        try {
+            img_db.child(filename_)
+                    .putFile(Uri.fromFile(new File(imagefilepath_.toString())))
+                    .addOnFailureListener(_img_db_failure_listener)
+                    .addOnProgressListener(_img_db_upload_progress_listener)
+                    .continueWithTask((Continuation<UploadTask.TaskSnapshot, Task<Uri>>) task ->
+                            img_db.child(imagefilepath_.toString()).getDownloadUrl()).addOnCompleteListener(_img_db_upload_success_listener);
+        }catch (Exception e){
+
+            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
+            Log.d("upload",e.toString());
 
         }
 
 
-
-
-
-
-
-    }
-
-
-    private void uploadThisImage(String imagefilepath){
-
-        img_db.child(new SimpleDateFormat("hh:mm:ss,dd-MMM-yyyy")
-                        .format(c.getTime()))
+ *//*       img_db.child(new SimpleDateFormat("hh:mm:ss,dd-MMM-yyyy")
+                        .format(String.valueOf((long)(c.getTimeInMillis()))))
                 .putFile(Uri.fromFile(new File(imagefilepath)))
                 .addOnFailureListener(_img_db_failure_listener)
                 .addOnProgressListener(_img_db_upload_progress_listener)
@@ -626,8 +713,10 @@ public class EventDetail extends AppCompatActivity {
                         return img_db.child(new SimpleDateFormat("hh:mm:ss,dd-MMM-yyyy").format(c.getTime())).getDownloadUrl();
                     }
                 }).addOnCompleteListener(_img_db_upload_success_listener);
+*//*
 
-    }
+    }*/
+
 
     @Subscribe
     public void getNotify(Events.EventUpdateDetail eventUpdateDetail) {
@@ -915,12 +1004,14 @@ public class EventDetail extends AppCompatActivity {
                 selected_img.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+/*
 
                         Intent intent = new Intent();
                         intent.setAction(android.content.Intent.ACTION_VIEW);
                         Uri uri = Uri.parse("file://" + img_path_);
                         intent.setDataAndType(uri,"image/*");
                         startActivity(intent);
+*/
 
 
                     }
