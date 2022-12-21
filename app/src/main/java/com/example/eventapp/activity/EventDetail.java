@@ -61,6 +61,7 @@ import com.example.eventapp.util.FileUtil;
 import com.example.eventapp.util.GlobalBus;
 import com.example.eventapp.util.Method;
 import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -217,6 +218,7 @@ public class EventDetail extends AppCompatActivity {
 
 
     int galleryList_position=0;
+    String _download_url_="";
 
     ///////////////////
     /** FIREBASE **/
@@ -449,9 +451,9 @@ public class EventDetail extends AppCompatActivity {
                                         if (galleryList_position < galleryLists.size()) {
 
                                             try {
-                                                progressDoalog.setMessage("Uploading "+(galleryList_position+1)+"/"+galleryLists.size());
+                                                progressDoalog.setMessage("Uploading "+(galleryList_position+1)+"/"+galleryLists.size() +" images");
 
-                                                uploadToFirebase(Objects.requireNonNull(galleryLists.get(0).get("path_url")).toString(),galleryList_position+ "img");
+                                                uploadToFirebase(Objects.requireNonNull(galleryLists.get(galleryList_position).get("path_url")).toString(),galleryList_position+ "img");
 
 
                                                  galleryList_position++;
@@ -466,10 +468,11 @@ public class EventDetail extends AppCompatActivity {
 
                                         } else {
 
-                                            next_upload = false;
+                                            upload_scheduler.cancel(); // this will always on top
+                                            next_upload = true;
                                             Toast.makeText(EventDetail.this, "Submitted", Toast.LENGTH_SHORT).show();
                                             progressDoalog.dismiss();
-                                            upload_scheduler.cancel();
+
 
                                         }
                                     }
@@ -649,13 +652,48 @@ public class EventDetail extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                if (taskSnapshot.getMetadata() != null) {
+                    if (taskSnapshot.getMetadata().getReference() != null) {
+                        Task<Uri> result = taskSnapshot.getStorage().getDownloadUrl();
+                        result.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                _download_url_ = uri.toString();
+                                //createNewPost(imageUrl);
+                            }
+                        });
+                    }}
+
+
+
+
+
+                Log.d("paths download url", _download_url_);
+                HashMap<String, Object> a;
+                a = new HashMap<>();
+                a.put("img_url", _download_url_);
+                fb_images.push().updateChildren(a);
+
                 img_db.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-
-                        Log.d("paths success",uri.toString());
+                        Log.d("paths success"," getDownloadUrl() onSuccess " +uri.toString());
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("paths success","getDownloadUrl() onFailure "+e.toString() );
+                    }
+                }).addOnCanceledListener(new OnCanceledListener() {
+                    @Override
+                    public void onCanceled() {
+                        Log.d("paths success","getDownloadUrl() onCanceled ");
                     }
                 });
+
+
+
                 next_upload = true;
                 Log.d("paths success","onSuccess");
 
