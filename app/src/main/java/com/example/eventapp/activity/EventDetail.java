@@ -265,6 +265,9 @@ public class EventDetail extends AppCompatActivity {
         final String _childKey = _param1.getKey();
         final HashMap<String, Object> _childValue = _param1.getValue(_ind);
 
+
+        message.setText("");
+
         user.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot _dataSnapshot) {
@@ -487,8 +490,13 @@ public class EventDetail extends AppCompatActivity {
 
                                             upload_scheduler.cancel(); // this will always on top
                                             next_upload = true;
-                                            Toast.makeText(EventDetail.this, "Submitted", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(EventDetail.this, "Uploaded successfully.", Toast.LENGTH_SHORT).show();
                                             progressDoalog.dismiss();
+                                            galleryLists.clear();
+                                            recyclerview2.setAdapter(new Recyclerview2Adapter(firebase_image_list));
+                                            recyclerview2.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                                            recyclerview2.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL, false));
+
 
 
                                         }
