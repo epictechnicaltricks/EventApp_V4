@@ -9,6 +9,7 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -16,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.print.PrintAttributes;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -95,8 +97,10 @@ import com.uttampanchasara.pdfgenerator.CreatePdf;
 import org.greenrobot.eventbus.Subscribe;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -412,7 +416,20 @@ public class EventDetail extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-
+                if(!message.getText().toString().trim().equals(""))
+                {
+                    HashMap<String, Object> messages;
+                    messages = new HashMap<>();
+                    c = Calendar.getInstance();
+                    messages.put("date",new SimpleDateFormat("dd MMM yyyy").format(c.getTime()));
+                    messages.put("id", method.userId());
+                    messages.put("name","Demo user");
+                    messages.put("user_img",method.userImage.trim());
+                    messages.put("msg", message.getText().toString());
+                    user.push().updateChildren(messages);
+                    //user.child("1").updateChildren(a);
+                    messages.clear();
+                }
 
 
 
@@ -639,41 +656,80 @@ public class EventDetail extends AppCompatActivity {
 
 
 
-    private void uploadToFirebase(String imagefilepath_, String file_name){
+    private void uploadToFirebase(String imagefilepath_, String file_name) throws IOException {
 
+      //  img_db.child(file_name).putFile(Uri.fromFile(new File(imagefilepath_)));
 
+        Bitmap bmp = MediaStore.Images.Media.getBitmap(getContentResolver(),Uri.fromFile(new File(imagefilepath_)));
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.WEBP, 46, baos);
+        byte[] data = baos.toByteArray();
+        //uploading the image
+        UploadTask uploadTask2 = img_db.child(file_name).putBytes(data);
 
-
-
-        img_db.child(file_name)
-                .putFile(Uri.fromFile(new File(imagefilepath_)))
-
-
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        uploadTask2.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
                 if (taskSnapshot.getMetadata() != null) {
                     if (taskSnapshot.getMetadata().getReference() != null) {
                         Task<Uri> result = taskSnapshot.getStorage().getDownloadUrl();
                         result.addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
+
+                                Log.d("download url", uri.toString());
+
                                 _download_url_ = uri.toString();
+                                Log.d("paths download url", _download_url_);
+                                HashMap<String, Object> a;
+                                a = new HashMap<>();
+                                a.put("img_url", _download_url_);
+                                c = Calendar.getInstance();
+                                a.put("img_id",c.getTimeInMillis());
+                                fb_images.push().updateChildren(a);
+                                a.clear();
+
+
+
+
+
+
+
+
+
+                                next_upload = true;
+                                Log.d("paths success","onSuccess");
+
                                 //createNewPost(imageUrl);
                             }
                         });
                     }}
 
 
+                // comment add
 
 
 
-                Log.d("paths download url", _download_url_);
-                HashMap<String, Object> a;
-                a = new HashMap<>();
-                a.put("img_url", _download_url_);
-                fb_images.push().updateChildren(a);
+
+
+
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("paths Failure","Uploading Failed !!");
+            }
+        });
+
+     /*   img_db.child(file_name)
+                .putFile(Uri.fromFile(new File(imagefilepath_)))
+
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+
 
                 img_db.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
@@ -694,25 +750,23 @@ public class EventDetail extends AppCompatActivity {
 
 
 
-                next_upload = true;
-                Log.d("paths success","onSuccess");
 
             }
         }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
 
-                Log.d("paths success","On progress ");
+
 
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
 
-                Log.d("paths Failure","Uploading Failed !!");
+
 
             }
-        });
+        });*/
     }
 
 
