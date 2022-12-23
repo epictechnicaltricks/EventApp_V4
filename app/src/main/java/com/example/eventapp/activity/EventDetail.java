@@ -471,9 +471,15 @@ public class EventDetail extends AppCompatActivity {
                                         if (galleryList_position < galleryLists.size()) {
 
                                             try {
-                                                progressDoalog.setMessage("Uploading "+(galleryList_position+1)+"/"+galleryLists.size() +" images");
+                                                if(galleryLists.size()==1){
+                                                    progressDoalog.setMessage("Uploading "+(galleryList_position+1)+"/"+galleryLists.size() +" image");
+                                                }else {
+                                                    progressDoalog.setMessage("Uploading "+(galleryList_position+1)+"/"+galleryLists.size() +" images");
+                                                }
 
-                                                uploadToFirebase(Objects.requireNonNull(galleryLists.get(galleryList_position).get("path_url")).toString(),galleryList_position+ "img");
+                                                c = Calendar.getInstance();
+
+                                                uploadToFirebase(Objects.requireNonNull(galleryLists.get(galleryList_position).get("path_url")).toString(),String.valueOf(c.getTimeInMillis()));
 
 
                                                  galleryList_position++;
@@ -492,10 +498,8 @@ public class EventDetail extends AppCompatActivity {
                                             next_upload = true;
                                             Toast.makeText(EventDetail.this, "Uploaded successfully.", Toast.LENGTH_SHORT).show();
                                             progressDoalog.dismiss();
-                                            galleryLists.clear();
-                                            recyclerview2.setAdapter(new Recyclerview2Adapter(firebase_image_list));
-                                            recyclerview2.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                                            recyclerview2.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL, false));
+                                            finish();
+                                            startActivity(new Intent(getApplicationContext(),EventDetail.class));
 
 
 
@@ -687,6 +691,7 @@ public class EventDetail extends AppCompatActivity {
 
                                 Log.d("download url", uri.toString());
 
+                              //////////////////////////////////////////////
                                 _download_url_ = uri.toString();
                                 Log.d("paths download url", _download_url_);
                                 HashMap<String, Object> a;
@@ -697,12 +702,7 @@ public class EventDetail extends AppCompatActivity {
                                 fb_images.push().updateChildren(a);
                                 a.clear();
 
-
-
-
-
-
-
+                                ////////////////////////////////////////
 
 
                                 next_upload = true;
