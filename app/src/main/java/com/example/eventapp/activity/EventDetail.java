@@ -498,8 +498,8 @@ public class EventDetail extends AppCompatActivity {
                                             next_upload = true;
                                             Toast.makeText(EventDetail.this, "Uploaded successfully.", Toast.LENGTH_SHORT).show();
                                             progressDoalog.dismiss();
-                                            finish();
-                                            startActivity(new Intent(getApplicationContext(),EventDetail.class));
+                                           // finish();
+                                           // startActivity(new Intent(getApplicationContext(),EventDetail.class));
 
 
 
@@ -674,7 +674,7 @@ public class EventDetail extends AppCompatActivity {
 
         Bitmap bmp = MediaStore.Images.Media.getBitmap(getContentResolver(),Uri.fromFile(new File(imagefilepath_)));
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.WEBP, 46, baos);
+        bmp.compress(Bitmap.CompressFormat.WEBP, 47, baos);
         byte[] data = baos.toByteArray();
         //uploading the image
         UploadTask uploadTask2 = img_db.child(file_name).putBytes(data);
@@ -690,6 +690,7 @@ public class EventDetail extends AppCompatActivity {
                             public void onSuccess(Uri uri) {
 
                                 Log.d("download url", uri.toString());
+
 
                               //////////////////////////////////////////////
                                 _download_url_ = uri.toString();

@@ -12,11 +12,31 @@
 		android:layout_height="match_parent"
 		android:background="#000000"
 		android:orientation="vertical">
+
+
 		<WebView
 			android:background="#000"
 			android:id="@+id/webview1"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent" />
+
+
+
+		<LinearLayout
+			android:gravity="bottom|right"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent">
+			<com.google.android.material.floatingactionbutton.FloatingActionButton
+				android:src="@drawable/download_"
+				android:layout_marginRight="25dp"
+				android:id="@+id/fab_download"
+				android:layout_marginBottom="40dp"
+				android:layout_width="match_parent"
+				android:layout_gravity="bottom"
+				android:layout_height="60dp"/>
+		</LinearLayout>
+
+
 		<LinearLayout
 			android:background="#000"
 			android:id="@+id/progress"
@@ -27,6 +47,7 @@
 			android:orientation="horizontal">
 
 
+
 			<ProgressBar
 				android:id="@+id/progressbar1"
 				android:layout_width="match_parent"
@@ -35,5 +56,11 @@
 				android:indeterminate="true"
 				style="?android:progressBarStyleHorizontal" />
 		</LinearLayout>
+
+
+
 	</RelativeLayout>
+
+
+
 </LinearLayout>
