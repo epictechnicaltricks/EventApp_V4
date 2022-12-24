@@ -74,6 +74,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
 import com.google.firebase.FirebaseApp;
@@ -223,6 +224,8 @@ public class EventDetail extends AppCompatActivity {
 
     int galleryList_position=0;
     String _download_url_="";
+
+
 
     ///////////////////
     /** FIREBASE **/
@@ -1025,6 +1028,7 @@ public class EventDetail extends AppCompatActivity {
                    public void onClick(View v) {
                        Intent i = new Intent();
                        i.putExtra("img",img_url);
+                       i.putExtra("img_id",Objects.requireNonNull(firebase_image_list.get(_position).get("img_id")).toString());
                        i.setClass(getApplicationContext(), view_img.class);
                        startActivity(i);
                    }

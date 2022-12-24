@@ -1,11 +1,11 @@
 package com.example.eventapp.activity;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -17,7 +17,12 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.error.ANError;
 import com.example.eventapp.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.io.File;
 
 public class view_img extends Activity {
 
@@ -26,6 +31,11 @@ public class view_img extends Activity {
     private LinearLayout progress;
     private ProgressBar progressbar1;
 
+
+    FloatingActionButton download_fab;
+
+
+    File file;
 
 
     @Override
@@ -43,6 +53,34 @@ public class view_img extends Activity {
         webview1.getSettings().setSupportZoom(true);
         progress = findViewById(R.id.progress);
         progressbar1 = findViewById(R.id.progressbar1);
+
+
+        download_fab = findViewById(R.id.fab_download);
+
+        download_fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+/*
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 123);
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
+                        showMessage("Need Permission to access storage for Downloading Image");
+                    } else {*/
+                        showMessage("Downloading..");
+                        download(getIntent().getStringExtra("img"),"/storage/emulated/0/Download/",getIntent().getStringExtra("img_id")+".png");
+
+/*
+                    }
+                }*/
+
+
+            }
+        });
+
+
 
         webview1.setWebViewClient(new WebViewClient() {
             @Override
@@ -84,11 +122,30 @@ public class view_img extends Activity {
         _web.getSettings().setDisplayZoomControls(false);
     }
 
+private void download(String _url, String _path, String _name){
 
+
+    AndroidNetworking.download(_url, _path, _name).build().startDownload(new com.androidnetworking.interfaces.DownloadListener() {
+        @Override
+        public void onDownloadComplete() {
+
+            Toast.makeText(view_img.this, "Download Completed", Toast.LENGTH_SHORT).show();
+
+        }
+
+        @Override
+        public void onError(ANError anError) {
+            Log.d("download_",anError.toString());
+            Toast.makeText(view_img.this, "Failed to download", Toast.LENGTH_SHORT).show();
+
+        }
+    });
+}
 
     @Deprecated
     public void showMessage(String _s) {
-        Toast.makeText(getApplicationContext(), _s, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), _s, Toast.LENGTH_LONG).show();
     }
+
 
 }

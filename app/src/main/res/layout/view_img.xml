@@ -31,7 +31,7 @@
 				android:layout_marginRight="25dp"
 				android:id="@+id/fab_download"
 				android:layout_marginBottom="40dp"
-				android:layout_width="match_parent"
+				android:layout_width="60dp"
 				android:layout_gravity="bottom"
 				android:layout_height="60dp"/>
 		</LinearLayout>
