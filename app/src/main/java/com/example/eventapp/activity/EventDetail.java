@@ -47,10 +47,15 @@ import androidx.viewpager.widget.ViewPager;
 import com.bumptech.glide.Glide;
 import com.example.eventapp.R;
 import com.example.eventapp.adapter.GalleryAdapter;
+import com.example.eventapp.fragment.BookEventFragment;
+import com.example.eventapp.fragment.ChangePasswordFragment;
+import com.example.eventapp.fragment.EditProfileFragment;
+import com.example.eventapp.fragment.MyEventFragment;
 import com.example.eventapp.fragment.ReportFragment;
 import com.example.eventapp.interFace.OnClick;
 import com.example.eventapp.response.DataRP;
 import com.example.eventapp.response.EventDetailRP;
+import com.example.eventapp.response.ProfileRP;
 import com.example.eventapp.response.TicketDownloadRP;
 import com.example.eventapp.response.TicketViewRP;
 import com.example.eventapp.response.UserTicketListRP;
@@ -150,7 +155,7 @@ public class EventDetail extends AppCompatActivity {
     private MaterialButton button, buttonUserList, buttonViewTicket, buttonDownloadTicket;
     private ImageView imageView, imageViewLogo, imageViewReport, imageViewFav, imageViewMap, imageViewPhone, imageViewEmail, imageViewWeb;
     private MaterialTextView textViewTitle, textViewAddress, textViewEventDateTime, textViewRegisterEventDateTime, textViewTitleRemaining, textViewRemaining,
-            textViewPhone, textViewEmail, textViewWeb, textViewPerson, textViewPrice;
+            textViewPhone, textViewEmail, textViewWeb, textViewPerson, textViewPrice,   event_photo_text, reviews_text;
 
 
     private MaterialButton submit_msg, add_photo;
@@ -218,7 +223,8 @@ public class EventDetail extends AppCompatActivity {
 
     ProgressDialog progressDoalog;
     ///private final ProgressDialog progressDialog_upload = new ProgressDialog(EventDetail.this);
-
+    int upload_quality = 15; // WEBP FORMAT
+    String user_name, user_id_ , profile_img_url_;
 
 
 
@@ -255,7 +261,9 @@ public class EventDetail extends AppCompatActivity {
         recyclerview2 = findViewById(R.id.recyclerview1_photos);
 
 
+        event_photo_text  = findViewById(R.id.event_photo_text);
 
+        reviews_text = findViewById(R.id.reviews_text);
 
 
 
@@ -270,6 +278,9 @@ public class EventDetail extends AppCompatActivity {
 
 
         message.setText("");
+       /* if(_childKey.equals(eventDetailRP.getId())){
+
+        }*/
 
         user.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -286,10 +297,19 @@ public class EventDetail extends AppCompatActivity {
                     _e.printStackTrace();
                 }
 
+
+
+
+
+
+
                 Collections.reverse(firebase_msg_list);
                 recyclerview1.setAdapter(new Recyclerview1Adapter(firebase_msg_list));
                 recyclerview1.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
                 recyclerview1.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL, false));
+
+
+                if(firebase_msg_list.size()>0){ reviews_text.setText("Reviews");}
 
             }
             @Override
@@ -343,8 +363,12 @@ public class EventDetail extends AppCompatActivity {
             GenericTypeIndicator<HashMap<String, Object>> _ind = new GenericTypeIndicator<HashMap<String, Object>>() {};
             final String _childKey = _param1.getKey();
             final HashMap<String, Object> _childValue = _param1.getValue(_ind);
+/*
+            if(_childKey.equals(eventDetailRP.getId())){
 
-           fb_images.addListenerForSingleValueEvent(new ValueEventListener() {
+            }*/
+
+            fb_images.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot _dataSnapshot) {
                     firebase_image_list = new ArrayList<>();
@@ -359,11 +383,15 @@ public class EventDetail extends AppCompatActivity {
                         _e.printStackTrace();
                     }
 
+
+
                     Collections.reverse(firebase_image_list);
                     recyclerview2.setAdapter(new Recyclerview2Adapter(firebase_image_list));
                     recyclerview2.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
                     recyclerview2.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL, false));
 
+                    //Toast.makeText(EventDetail.this, firebase_image_list.size()+"", Toast.LENGTH_SHORT).show();
+                    if(firebase_image_list.size()>0){ event_photo_text.setText("Event Photos"); }
                 }
                 @Override
                 public void onCancelled(DatabaseError _databaseError) {
@@ -371,6 +399,7 @@ public class EventDetail extends AppCompatActivity {
                     Toast.makeText(EventDetail.this, _databaseError.toString(), Toast.LENGTH_SHORT).show();
                 }
             });
+
 
 
         }
@@ -428,12 +457,14 @@ public class EventDetail extends AppCompatActivity {
                     messages = new HashMap<>();
                     c = Calendar.getInstance();
                     messages.put("date",new SimpleDateFormat("dd MMM yyyy").format(c.getTime()));
-                    messages.put("id", method.userId());
-                    messages.put("name","Demo user");
-                    messages.put("user_img",method.userImage.trim());
+                    messages.put("user_id", user_id_);
+                    messages.put("name",user_name);
+                    messages.put("event_id",eventDetailRP.getId());
+
+                    // messages.put("user_img",profile_img_url_);
                     messages.put("msg", message.getText().toString());
                     user.push().updateChildren(messages);
-                    //user.child("1").updateChildren(a);
+                    //user.child(user_id_).updateChildren(messages);
                     messages.clear();
                 }
 
@@ -677,7 +708,9 @@ public class EventDetail extends AppCompatActivity {
 
         Bitmap bmp = MediaStore.Images.Media.getBitmap(getContentResolver(),Uri.fromFile(new File(imagefilepath_)));
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.WEBP, 47, baos);
+
+            bmp.compress(Bitmap.CompressFormat.WEBP, upload_quality , baos);
+
         byte[] data = baos.toByteArray();
         //uploading the image
         UploadTask uploadTask2 = img_db.child(file_name).putBytes(data);
@@ -703,6 +736,9 @@ public class EventDetail extends AppCompatActivity {
                                 a.put("img_url", _download_url_);
                                 c = Calendar.getInstance();
                                 a.put("img_id",c.getTimeInMillis());
+                                a.put("user_id",user_id_);
+                                a.put("event_id",eventDetailRP.getId());
+                                //eventDetailRP.getId();
                                 fb_images.push().updateChildren(a);
                                 a.clear();
 
@@ -1177,6 +1213,10 @@ public class EventDetail extends AppCompatActivity {
         new Handler().postDelayed(() -> {
             if (method.isNetworkAvailable()) {
                 if (method.isLogin()) {
+
+                    /// get profile
+                    profile(method.userId());
+
                     eventDetail(method.userId(), id);
                 } else {
                     eventDetail("0", id);
@@ -1197,6 +1237,7 @@ public class EventDetail extends AppCompatActivity {
         }
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -1900,5 +1941,61 @@ public class EventDetail extends AppCompatActivity {
         super.onDestroy();
         // Unregister the registered event.
         GlobalBus.getBus().unregister(this);
+    }
+
+
+    public void profile(String userId) {
+
+        progressBar.setVisibility(View.VISIBLE);
+
+        JsonObject jsObj = (JsonObject) new Gson().toJsonTree(new API(EventDetail.this));
+        jsObj.addProperty("id", userId);
+        jsObj.addProperty("method_name", "user_profile");
+        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+        Call<ProfileRP> call = apiService.getProfile(API.toBase64(jsObj.toString()));
+        call.enqueue(new Callback<ProfileRP>() {
+            @SuppressLint("UseCompatLoadingForDrawables")
+            @Override
+            public void onResponse(@NotNull Call<ProfileRP> call, @NotNull Response<ProfileRP> response) {
+
+                try {
+                    ProfileRP profileRP = response.body();
+                    assert profileRP != null;
+
+                    if (profileRP.getStatus().equals("1")) {
+
+                        method.editor.putString(method.userImage, profileRP.getUser_image());
+                        method.editor.commit();
+                        user_name = profileRP.getName();
+                        user_id_ = profileRP.getUser_id();
+                        profile_img_url_ = profileRP.getUser_image();
+
+
+                  //      Toast.makeText(EventDetail.this, "inside profile ", Toast.LENGTH_SHORT).show();
+
+
+                    } else if (profileRP.getStatus().equals("2")) {
+                        method.suspend(profileRP.getMessage());
+                    } else {
+
+                        method.alertBox(profileRP.getMessage());
+                    }
+
+                } catch (Exception e) {
+                    Log.d("exception_error", e.toString());
+                    method.alertBox(getResources().getString(R.string.failed_try_again));
+                }
+
+
+
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<ProfileRP> call, @NotNull Throwable t) {
+                // Log error here since request failed
+                Log.e("fail", t.toString());
+                method.alertBox(getResources().getString(R.string.failed_try_again));
+            }
+        });
     }
 }

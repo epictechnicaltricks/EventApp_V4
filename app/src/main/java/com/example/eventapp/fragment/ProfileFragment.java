@@ -181,6 +181,8 @@ public class ProfileFragment extends Fragment {
 
                                 textViewName.setText(profileRP.getName());
 
+
+
                                 imageViewEdit.setOnClickListener(v -> {
                                     getActivity().getSupportFragmentManager().beginTransaction().add(R.id.frameLayout_main,
                                             new EditProfileFragment(), getResources().getString(R.string.edit_profile))
