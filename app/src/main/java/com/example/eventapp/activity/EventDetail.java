@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.print.PrintAttributes;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -28,6 +29,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -162,6 +164,9 @@ public class EventDetail extends AppCompatActivity {
 
     TextInputEditText message;
 
+
+    LinearLayout review_enter_layout;
+
     ArrayList<HashMap<String, Object>> firebase_msg_list = new ArrayList<>();
     ArrayList<HashMap<String, Object>> firebase_image_list = new ArrayList<>();
 
@@ -200,6 +205,14 @@ public class EventDetail extends AppCompatActivity {
 
     RecyclerView recyclerview3;
 
+    int images_limit = 0;
+    int msg_limit = 0 ;
+    String str = "";
+    String str2 = "";
+    String key_for_img = "";
+    String key_for_msg = "";
+    boolean onetime_img= true;
+    boolean onetime_msg= true;
     ////////////////////////////////////////
 
 
@@ -232,6 +245,12 @@ public class EventDetail extends AppCompatActivity {
     String _download_url_="";
 
 
+/*
+    private Timer firebase_timer = new Timer();
+    private TimerTask firebase_time_delay;
+*/
+
+
 
     ///////////////////
     /** FIREBASE **/
@@ -260,96 +279,24 @@ public class EventDetail extends AppCompatActivity {
         recyclerview1 = findViewById(R.id.recyclerview1_msg);
         recyclerview2 = findViewById(R.id.recyclerview1_photos);
 
-
+        review_enter_layout = findViewById(R.id.review_enter_layout);
         event_photo_text  = findViewById(R.id.event_photo_text);
 
         reviews_text = findViewById(R.id.reviews_text);
 
 
-
-
-        _user_child_listener = new ChildEventListener() {
-    @Override
-    public void onChildAdded(@NonNull DataSnapshot _param1, @Nullable String s) {
-
-        GenericTypeIndicator<HashMap<String, Object>> _ind = new GenericTypeIndicator<HashMap<String, Object>>() {};
-        final String _childKey = _param1.getKey();
-        final HashMap<String, Object> _childValue = _param1.getValue(_ind);
-
-
-        message.setText("");
-       /* if(_childKey.equals(eventDetailRP.getId())){
-
-        }*/
-
-        user.addListenerForSingleValueEvent(new ValueEventListener() {
+/*       // message.setText("");
+        firebase_time_delay = new TimerTask() {
             @Override
-            public void onDataChange(DataSnapshot _dataSnapshot) {
-                firebase_msg_list = new ArrayList<>();
-                try {
-                    GenericTypeIndicator<HashMap<String, Object>> _ind = new GenericTypeIndicator<HashMap<String, Object>>() {};
-                    for (DataSnapshot _data : _dataSnapshot.getChildren()) {
-                        HashMap<String, Object> _map = _data.getValue(_ind);
-                        firebase_msg_list.add(_map);
-                    }
-                }
-                catch (Exception _e) {
-                    _e.printStackTrace();
-                }
+            public void run() {
 
 
-
-
-
-
-
-                Collections.reverse(firebase_msg_list);
-                recyclerview1.setAdapter(new Recyclerview1Adapter(firebase_msg_list));
-                recyclerview1.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                recyclerview1.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL, false));
-
-
-                if(firebase_msg_list.size()>0){ reviews_text.setText("Reviews");}
+                  call_firbase();
+                firebase_time_delay.cancel();
 
             }
-            @Override
-            public void onCancelled(DatabaseError _databaseError) {
-
-                Toast.makeText(EventDetail.this, _databaseError.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
-
-       // Toast.makeText(EventDetail.this, "Added", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-
-
-    }
-
-    @Override
-    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-    }
-
-    @Override
-    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-    }
-
-    @Override
-    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-        Toast.makeText(EventDetail.this, databaseError.toString(), Toast.LENGTH_SHORT).show();
-
-    }
-};
-         user.addChildEventListener(_user_child_listener);
-
+        };
+        firebase_timer.schedule(firebase_time_delay, 2000);*/
 
 
         fp.setType("image/*");
@@ -357,74 +304,6 @@ public class EventDetail extends AppCompatActivity {
 
 
 
-    _fb_images_child_listener = new ChildEventListener() {
-        @Override
-        public void onChildAdded(@NonNull DataSnapshot _param1, @Nullable String s) {
-            GenericTypeIndicator<HashMap<String, Object>> _ind = new GenericTypeIndicator<HashMap<String, Object>>() {};
-            final String _childKey = _param1.getKey();
-            final HashMap<String, Object> _childValue = _param1.getValue(_ind);
-/*
-            if(_childKey.equals(eventDetailRP.getId())){
-
-            }*/
-
-            fb_images.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot _dataSnapshot) {
-                    firebase_image_list = new ArrayList<>();
-                    try {
-                        GenericTypeIndicator<HashMap<String, Object>> _ind = new GenericTypeIndicator<HashMap<String, Object>>() {};
-                        for (DataSnapshot _data : _dataSnapshot.getChildren()) {
-                            HashMap<String, Object> _map = _data.getValue(_ind);
-                            firebase_image_list.add(_map);
-                        }
-                    }
-                    catch (Exception _e) {
-                        _e.printStackTrace();
-                    }
-
-
-
-                    Collections.reverse(firebase_image_list);
-                    recyclerview2.setAdapter(new Recyclerview2Adapter(firebase_image_list));
-                    recyclerview2.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                    recyclerview2.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL, false));
-
-                    //Toast.makeText(EventDetail.this, firebase_image_list.size()+"", Toast.LENGTH_SHORT).show();
-                    if(firebase_image_list.size()>0){ event_photo_text.setText("Event Photos"); }
-                }
-                @Override
-                public void onCancelled(DatabaseError _databaseError) {
-
-                    Toast.makeText(EventDetail.this, _databaseError.toString(), Toast.LENGTH_SHORT).show();
-                }
-            });
-
-
-
-        }
-
-        @Override
-        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-        }
-
-        @Override
-        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-        }
-
-        @Override
-        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-        }
-
-        @Override
-        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-        }
-    };
-    fb_images.addChildEventListener(_fb_images_child_listener);
     
       
         //////////////////
@@ -438,7 +317,17 @@ public class EventDetail extends AppCompatActivity {
         add_photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(fp, REQ_CD_FP);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED
+                            ||checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+                        requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2022);
+                    } else {
+                        startActivityForResult(fp, REQ_CD_FP);
+                    }
+                }
+
+
             }
         });
 
@@ -466,6 +355,9 @@ public class EventDetail extends AppCompatActivity {
                     user.push().updateChildren(messages);
                     //user.child(user_id_).updateChildren(messages);
                     messages.clear();
+
+                    message.setText("");
+
                 }
 
 
@@ -702,9 +594,369 @@ public class EventDetail extends AppCompatActivity {
 
 
 
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+    /*    recyclerview1.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if (! recyclerView.canScrollHorizontally(1)) {
+                    Parcelable msg_state = recyclerview1.getLayoutManager().onSaveInstanceState();
+                *//*    Code By EPIC Technical Tricks on 25th April 2022 *//*
+                   *//* if (eventDetailRP.getId() != null) {
+                        Log.d("query", "inside post create  "+eventDetailRP.getId());
+                        _load_more_reviews(eventDetailRP.getId());
+                    }*//*
+
+                    onetime_img= true;
+
+                    // _progress();
+                    Toast.makeText(EventDetail.this, "Loading more reviews..", Toast.LENGTH_SHORT).show();
+
+                    recyclerview1.getLayoutManager().onRestoreInstanceState(msg_state);
+
+                }}
+        });
+
+
+
+        recyclerview2.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if (! recyclerView.canScrollHorizontally(1))
+                {
+
+                    Parcelable img_state = recyclerview2.getLayoutManager().onSaveInstanceState();
+
+                    onetime_msg= true;
+
+                   *//* Code By EPIC Technical Tricks on 25th April 2022 *//*
+                  *//*  if(eventDetailRP.getId()!=null){
+                        _load_more_images(eventDetailRP.getId());
+                    }*//*
+                    Toast.makeText(EventDetail.this, "Loading more photos..", Toast.LENGTH_SHORT).show();
+                    // _progress();
+                    recyclerview2.getLayoutManager().onRestoreInstanceState(img_state);
+
+
+                }
+            }
+        });
+*/
+
+    }
+
+    public void _load_more_images(String _event_id) {
+        images_limit = images_limit + 2;
+        key_for_img = "event_id";
+        query_img = fb_images.orderByChild(key_for_img).limitToLast((int) images_limit).equalTo(_event_id);
+
+
+       Log.d("query", "load_more_images_call " +_event_id +" limit "+ images_limit);
+        query_img.addValueEventListener(valueEventListener1_image);
+
+    }
+
+    public void _load_more_reviews(String _event_id) {
+        msg_limit = msg_limit + 3;
+        key_for_msg = "event_id";
+        query_msg = user.orderByChild(key_for_msg).limitToLast((int)msg_limit).equalTo(_event_id);
+
+        Log.d("query", "load_more_reviews_call " +_event_id+" limit "+ msg_limit);
+        query_msg.addValueEventListener(valueEventListener1_msg);
+
+    }
+
+
+
+
+    com.google.firebase.database.Query query_img;
+    com.google.firebase.database.Query query_msg;
+
+
+    ValueEventListener valueEventListener1_image = new ValueEventListener() {
+        @Override public void onDataChange(DataSnapshot _param1) {
+            try {
+
+
+        str ="";
+
+
+        firebase_image_list.clear();
+
+        //must change listmap
+
+        GenericTypeIndicator < HashMap< String, Object>> _ind = new GenericTypeIndicator<HashMap< String, Object>>() {}; for (DataSnapshot _data : _param1.getChildren()) { str = (_data.getKey()); HashMap <String, Object> _map= _data.getValue(_ind);
+
+
+                    firebase_image_list.add(_map);
+
+            // here rename to yours " listmap "
+
+        }
+
+
+        //progress_layout.setVisibility(View.GONE);
+       // Parcelable state = listview1.onSaveInstanceState();
+
+
+				/* Code By EPIC Technical Tricks on 9th June  2022 */
+
+                Log.d("query", "refresh_img_recycler size "+firebase_image_list.size());
+                Collections.reverse(firebase_image_list);
+                recyclerview2.setAdapter(new Recyclerview2Adapter(firebase_image_list));
+                recyclerview2.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                recyclerview2.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL, false));
+
+                //Toast.makeText(EventDetail.this, firebase_image_list.size()+"", Toast.LENGTH_SHORT).show();
+                if(firebase_image_list.size()>0){ event_photo_text.setText("Event Photos"); }
+
+
+
+    } catch (Exception e) {
+                Toast.makeText(EventDetail.this, e.toString(), Toast.LENGTH_SHORT).show();
+            } } @Override public void onCancelled(DatabaseError databaseError) { } };
+
+
+
+    /////////////////////////////////////////////////
+
+
+
+    ValueEventListener valueEventListener1_msg = new ValueEventListener() { @Override public void onDataChange(DataSnapshot _param1) { try {
+
+
+        str2 ="";
+
+
+        firebase_msg_list.clear();
+
+        //must change listmap
+
+        GenericTypeIndicator < HashMap< String, Object>> _ind = new GenericTypeIndicator<HashMap< String, Object>>() {}; for (DataSnapshot _data : _param1.getChildren()) { str2 = (_data.getKey()); HashMap <String, Object> _map= _data.getValue(_ind);
+
+
+            firebase_msg_list.add(_map);
+
+            // here rename to yours " listmap "
+
+        }
+       // progress_layout.setVisibility(View.GONE);
+       // Parcelable state = listview1.onSaveInstanceState();
+
+
+				/* Code By EPIC Technical Tricks on 9th June  2022 */
+
+        Log.d("query", "refresh_msg_recycler size "+firebase_msg_list.size());
+        Collections.reverse(firebase_msg_list);
+        recyclerview1.setAdapter(new Recyclerview1Adapter(firebase_msg_list));
+        recyclerview1.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        recyclerview1.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL, false));
+
+
+        if(firebase_msg_list.size()>0){ reviews_text.setText("Reviews");}
+
+
+      // listview1.setAdapter(new Listview1Adapter(listmap));
+      // ((BaseAdapter)listview1.getAdapter()).notifyDataSetChanged();
+      // listview1.onRestoreInstanceState(state);
+
+    } catch (Exception e) {
+        Toast.makeText(EventDetail.this, e.toString() , Toast.LENGTH_SHORT).show();
+    } } @Override public void onCancelled(DatabaseError databaseError) { } };
+
+
+
+
+
+
+
+
+ /*   private void call_firbase(){
+
+
+    _user_child_listener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(@NonNull DataSnapshot _param1, @Nullable String s) {
+
+            GenericTypeIndicator<HashMap<String, Object>> _ind = new GenericTypeIndicator<HashMap<String, Object>>() {};
+            final String _childKey = _param1.getKey();
+            final HashMap<String, Object> _childValue = _param1.getValue(_ind);
+
+
+            if(eventDetailRP.getId()!=null){
+                assert _childKey != null;
+                if(_childKey.equals(eventDetailRP.getId())){
+
+
+                    user.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot _dataSnapshot) {
+                            firebase_msg_list = new ArrayList<>();
+                            try {
+                                GenericTypeIndicator<HashMap<String, Object>> _ind = new GenericTypeIndicator<HashMap<String, Object>>() {};
+                                for (DataSnapshot _data : _dataSnapshot.getChildren()) {
+                                    HashMap<String, Object> _map = _data.getValue(_ind);
+                                    firebase_msg_list.add(_map);
+                                }
+                            }
+                            catch (Exception _e) {
+                                _e.printStackTrace();
+                            }
+
+
+                            Collections.reverse(firebase_msg_list);
+                            recyclerview1.setAdapter(new Recyclerview1Adapter(firebase_msg_list));
+                            recyclerview1.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                            recyclerview1.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL, false));
+
+
+                            if(firebase_msg_list.size()>0){ reviews_text.setText("Reviews");}
+
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError _databaseError) {
+
+                            Toast.makeText(EventDetail.this, _databaseError.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+
+                }
+            } else {
+
+                Toast.makeText(EventDetail.this, "Event id null ", Toast.LENGTH_SHORT).show();
+            }
+
+
+
+
+
+
+
+            // Toast.makeText(EventDetail.this, "Added", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+
+
+        }
+
+        @Override
+        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            Toast.makeText(EventDetail.this, databaseError.toString(), Toast.LENGTH_SHORT).show();
+
+        }
+    };
+    user.addChildEventListener(_user_child_listener);
+
+
+    _fb_images_child_listener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(@NonNull DataSnapshot _param1, @Nullable String s) {
+            GenericTypeIndicator<HashMap<String, Object>> _ind = new GenericTypeIndicator<HashMap<String, Object>>() {};
+            final String _childKey = _param1.getKey();
+            final HashMap<String, Object> _childValue = _param1.getValue(_ind);
+
+
+            if(eventDetailRP.getId()!=null){
+
+                assert _childKey != null;
+                if(_childKey.equals(eventDetailRP.getId())){
+                    fb_images.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot _dataSnapshot) {
+                            firebase_image_list = new ArrayList<>();
+                            try {
+                                GenericTypeIndicator<HashMap<String, Object>> _ind = new GenericTypeIndicator<HashMap<String, Object>>() {};
+                                for (DataSnapshot _data : _dataSnapshot.getChildren()) {
+                                    HashMap<String, Object> _map = _data.getValue(_ind);
+                                    firebase_image_list.add(_map);
+                                }
+                            }
+                            catch (Exception _e) {
+                                _e.printStackTrace();
+                            }
+
+
+
+                            Collections.reverse(firebase_image_list);
+                            recyclerview2.setAdapter(new Recyclerview2Adapter(firebase_image_list));
+                            recyclerview2.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                            recyclerview2.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL, false));
+
+                            //Toast.makeText(EventDetail.this, firebase_image_list.size()+"", Toast.LENGTH_SHORT).show();
+                            if(firebase_image_list.size()>0){ event_photo_text.setText("Event Photos"); }
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError _databaseError) {
+
+                            Toast.makeText(EventDetail.this, _databaseError.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+            } else {
+
+                Toast.makeText(EventDetail.this, "Event id null ", Toast.LENGTH_SHORT).show();
+            }
+
+
+
+
+
+
+
+
+
+        }
+
+        @Override
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+        }
+
+        @Override
+        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
+    fb_images.addChildEventListener(_fb_images_child_listener);
+}*/
+
     private void uploadToFirebase(String imagefilepath_, String file_name) throws IOException {
 
       //  img_db.child(file_name).putFile(Uri.fromFile(new File(imagefilepath_)));
+
+        /** converted images to webp format  14mb to > 1mb size  **/
 
         Bitmap bmp = MediaStore.Images.Media.getBitmap(getContentResolver(),Uri.fromFile(new File(imagefilepath_)));
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -757,11 +1009,6 @@ public class EventDetail extends AppCompatActivity {
                 // comment add
 
 
-
-
-
-
-
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -770,92 +1017,10 @@ public class EventDetail extends AppCompatActivity {
             }
         });
 
-     /*   img_db.child(file_name)
-                .putFile(Uri.fromFile(new File(imagefilepath_)))
 
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-
-
-                img_db.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        Log.d("paths success"," getDownloadUrl() onSuccess " +uri.toString());
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("paths success","getDownloadUrl() onFailure "+e.toString() );
-                    }
-                }).addOnCanceledListener(new OnCanceledListener() {
-                    @Override
-                    public void onCanceled() {
-                        Log.d("paths success","getDownloadUrl() onCanceled ");
-                    }
-                });
-
-
-
-
-            }
-        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
-
-
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-
-
-
-            }
-        });*/
     }
 
 
-/*    private void uploadThisImage(Object imagefilepath_ , String filename_){
-
-
-        Toast.makeText(EventDetail.this, imagefilepath_.toString(), Toast.LENGTH_SHORT).show();
-
-
-        c = Calendar.getInstance();
-
-        ///new SimpleDateFormat("hh:mm:ss,dd-MMM-yyyy").format(String.valueOf((long)(c.getTimeInMillis())))
-        try {
-            img_db.child(filename_)
-                    .putFile(Uri.fromFile(new File(imagefilepath_.toString())))
-                    .addOnFailureListener(_img_db_failure_listener)
-                    .addOnProgressListener(_img_db_upload_progress_listener)
-                    .continueWithTask((Continuation<UploadTask.TaskSnapshot, Task<Uri>>) task ->
-                            img_db.child(imagefilepath_.toString()).getDownloadUrl()).addOnCompleteListener(_img_db_upload_success_listener);
-        }catch (Exception e){
-
-            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
-            Log.d("upload",e.toString());
-
-        }
-
-
- *//*       img_db.child(new SimpleDateFormat("hh:mm:ss,dd-MMM-yyyy")
-                        .format(String.valueOf((long)(c.getTimeInMillis()))))
-                .putFile(Uri.fromFile(new File(imagefilepath)))
-                .addOnFailureListener(_img_db_failure_listener)
-                .addOnProgressListener(_img_db_upload_progress_listener)
-                .continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                    @Override
-                    public Task<Uri> then(Task<UploadTask.TaskSnapshot> task) throws Exception {
-                        return img_db.child(new SimpleDateFormat("hh:mm:ss,dd-MMM-yyyy").format(c.getTime())).getDownloadUrl();
-                    }
-                }).addOnCompleteListener(_img_db_upload_success_listener);
-*//*
-
-    }*/
 
 
     @Subscribe
@@ -957,7 +1122,18 @@ public class EventDetail extends AppCompatActivity {
 
 
             try{
+                if ((firebase_msg_list.size() - 1) == _position) {
 
+                    if(onetime_msg){
+                        _load_more_images(eventDetailRP.getId());
+
+                        onetime_msg = false;
+                    }
+
+                }
+
+
+                Log.d("query","messages txt "+Objects.requireNonNull(firebase_msg_list.get(_position).get("msg")).toString());
 
                 message.setText(Objects.requireNonNull(firebase_msg_list.get(_position).get("msg")).toString());
                 user_name.setText(Objects.requireNonNull(firebase_msg_list.get(_position).get("name")).toString());
@@ -1026,6 +1202,7 @@ public class EventDetail extends AppCompatActivity {
 
     public class Recyclerview2Adapter extends RecyclerView.Adapter<Recyclerview2Adapter.ViewHolder> {
         ArrayList<HashMap<String, Object>> _data;
+
         public Recyclerview2Adapter(ArrayList<HashMap<String, Object>> _arr) {
             _data = _arr;
         }
@@ -1052,8 +1229,20 @@ public class EventDetail extends AppCompatActivity {
 
               //  message.setText(Objects.requireNonNull(firebase_msg_list.get(_position).get("msg")).toString());
 
+               if ((firebase_image_list.size() - 1) == _position) {
+
+                   if(onetime_img){
+                       _load_more_images(eventDetailRP.getId());
+
+                       onetime_img = false;
+                   }
+
+               }
+
+
               String img_url = Objects.requireNonNull(firebase_image_list.get(_position).get("img_url")).toString();
 
+               Log.d("query","img url "+img_url );
 
                Glide.with(getApplicationContext()).load(Uri.parse(img_url)).thumbnail(0.1f).into(img_);
 
@@ -1210,6 +1399,7 @@ public class EventDetail extends AppCompatActivity {
 
 
     private void callData() {
+        review_enter_layout.setVisibility(View.GONE);
         new Handler().postDelayed(() -> {
             if (method.isNetworkAvailable()) {
                 if (method.isLogin()) {
@@ -1218,10 +1408,16 @@ public class EventDetail extends AppCompatActivity {
                     profile(method.userId());
 
                     eventDetail(method.userId(), id);
+
+                    review_enter_layout.setVisibility(View.VISIBLE);
+
+
                 } else {
+                    review_enter_layout.setVisibility(View.GONE);
                     eventDetail("0", id);
                 }
             } else {
+                review_enter_layout.setVisibility(View.GONE);
                 method.alertBox(getResources().getString(R.string.internet_connection));
             }
         }, 500);
@@ -1277,6 +1473,12 @@ public class EventDetail extends AppCompatActivity {
                     if (eventDetailRP.getStatus().equals("1")) {
 
                         if (eventDetailRP.getSuccess().equals("1")) {
+
+
+                            // load the event images and reviews
+                            _load_more_images(eventDetailRP.getId());
+                            _load_more_reviews(eventDetailRP.getId());
+                            Log.d("query", "event id "+eventDetailRP.getId());
 
                             if (type.equals("book_event")) {
                                 button.setVisibility(View.GONE);
@@ -1574,6 +1776,13 @@ public class EventDetail extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+
+        if (requestCode == 2022) {
+          add_photo.performClick();
+        }
+
+
         if (requestCode == REQUEST_CODE_PERMISSION_PDF) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (eventDetailRP != null) {
