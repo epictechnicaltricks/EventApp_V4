@@ -115,6 +115,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -124,6 +125,7 @@ import io.github.lizhangqu.coreprogress.ProgressUIListener;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
+import okhttp3.internal.Util;
 import okio.BufferedSink;
 import okio.BufferedSource;
 import okio.Okio;
@@ -321,6 +323,9 @@ public class EventDetail extends AppCompatActivity {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED
                             ||checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+
+                        Toast.makeText(EventDetail.this, "Allow STORAGE PERMISSION", Toast.LENGTH_SHORT).show();
+
                         requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2022);
                     } else {
                         startActivityForResult(fp, REQ_CD_FP);
@@ -352,6 +357,9 @@ public class EventDetail extends AppCompatActivity {
 
                     // messages.put("user_img",profile_img_url_);
                     messages.put("msg", message.getText().toString());
+                    c = Calendar.getInstance();
+
+                    messages.put("review_id",c.getTimeInMillis()+""+random1000_9999());
                     user.push().updateChildren(messages);
                     //user.child(user_id_).updateChildren(messages);
                     messages.clear();
@@ -412,8 +420,7 @@ public class EventDetail extends AppCompatActivity {
                                                 next_upload = false;
 
 
-                                            }catch (Exception e)
-                                            {
+                                            }catch (Exception e) {
                                                 Log.d("upload_error",e.toString());
                                             }
 
@@ -422,10 +429,13 @@ public class EventDetail extends AppCompatActivity {
 
                                             upload_scheduler.cancel(); // this will always on top
                                             next_upload = true;
-                                            Toast.makeText(EventDetail.this, "Uploaded successfully.", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(EventDetail.this, "Uploaded successfully.", Toast.LENGTH_LONG).show();
                                             progressDoalog.dismiss();
-                                           // finish();
-                                           // startActivity(new Intent(getApplicationContext(),EventDetail.class));
+
+                                            galleryLists.clear();
+
+                                           finish();
+
 
 
 
@@ -651,8 +661,19 @@ public class EventDetail extends AppCompatActivity {
 
     }
 
+
+    public int random1000_9999(){
+
+        // initialize a Random object somewhere; you should only need one
+        Random random = new Random();
+
+         // generate a random integer from 1000 to 9999, then add 1000
+
+        return random.nextInt((9999 - 1000) + 1) + 1000;
+    }
+
     public void _load_more_images(String _event_id) {
-        images_limit = images_limit + 2;
+        images_limit = images_limit + 30;
         key_for_img = "event_id";
         query_img = fb_images.orderByChild(key_for_img).limitToLast((int) images_limit).equalTo(_event_id);
 
@@ -663,7 +684,7 @@ public class EventDetail extends AppCompatActivity {
     }
 
     public void _load_more_reviews(String _event_id) {
-        msg_limit = msg_limit + 3;
+        msg_limit = msg_limit + 50;
         key_for_msg = "event_id";
         query_msg = user.orderByChild(key_for_msg).limitToLast((int)msg_limit).equalTo(_event_id);
 
@@ -987,7 +1008,7 @@ public class EventDetail extends AppCompatActivity {
                                 a = new HashMap<>();
                                 a.put("img_url", _download_url_);
                                 c = Calendar.getInstance();
-                                a.put("img_id",c.getTimeInMillis());
+                                a.put("img_id",c.getTimeInMillis()+""+random1000_9999());
                                 a.put("user_id",user_id_);
                                 a.put("event_id",eventDetailRP.getId());
                                 //eventDetailRP.getId();
@@ -1122,7 +1143,7 @@ public class EventDetail extends AppCompatActivity {
 
 
             try{
-                if ((firebase_msg_list.size() - 1) == _position) {
+                /*if ((firebase_msg_list.size() - 1) == _position) {
 
                     if(onetime_msg){
                         _load_more_images(eventDetailRP.getId());
@@ -1131,7 +1152,7 @@ public class EventDetail extends AppCompatActivity {
                     }
 
                 }
-
+*/
 
                 Log.d("query","messages txt "+Objects.requireNonNull(firebase_msg_list.get(_position).get("msg")).toString());
 
@@ -1229,7 +1250,7 @@ public class EventDetail extends AppCompatActivity {
 
               //  message.setText(Objects.requireNonNull(firebase_msg_list.get(_position).get("msg")).toString());
 
-               if ((firebase_image_list.size() - 1) == _position) {
+         /*      if ((firebase_image_list.size() - 1) == _position) {
 
                    if(onetime_img){
                        _load_more_images(eventDetailRP.getId());
@@ -1237,7 +1258,7 @@ public class EventDetail extends AppCompatActivity {
                        onetime_img = false;
                    }
 
-               }
+               }*/
 
 
               String img_url = Objects.requireNonNull(firebase_image_list.get(_position).get("img_url")).toString();
