@@ -54,7 +54,9 @@
 
     <color name="textView_ed">#525252</color>
     <color name="view_bg_ed">#FFFFFF</color>
+    <color name="card_backgroung">#FFFFFF</color>
     <color name="textView_title_ed">#323232</color>
+    <color name="textView_readmore">#9610C5</color>
     <color name="view_venue_ed">#ECEDEF</color>
     <color name="page_indicator_active_ed">#613ec1</color>
     <color name="page_indicator_inactive_ed">#FFFFFF</color>

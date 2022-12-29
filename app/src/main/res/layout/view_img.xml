@@ -49,6 +49,7 @@
 
 
 			<ProgressBar
+				android:theme="@style/ProgressBarTheme"
 				android:id="@+id/progressbar1"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"

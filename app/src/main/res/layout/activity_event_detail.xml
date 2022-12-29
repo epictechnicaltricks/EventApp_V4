@@ -645,13 +645,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     app:cardUseCompatPadding="true"
-                    app:cardBackgroundColor="@color/view_venue_ed"
+                    app:cardBackgroundColor="@color/app_background"
                     app:cardCornerRadius="0dp"
                     app:cardElevation="2dp"
                     app:layout_constraintTop_toBottomOf="@+id/cardView_venue_ed">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
-                        android:background="#fff"
+
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingTop="10dp"
@@ -661,7 +661,7 @@
 
 
                         <LinearLayout
-                            android:background="#fff"
+
                             android:id="@+id/feed_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -795,6 +795,8 @@
 
                                     <com.google.android.material.button.MaterialButton
 
+                                        app:backgroundTint="@color/button_bg"
+                                        android:textColor="@color/white"
                                         android:layout_width="wrap_content"
                                         app:cornerRadius="50dp"
                                         android:textSize="11dp"
@@ -809,6 +811,8 @@
                                     </com.google.android.material.button.MaterialButton>
 
                                     <com.google.android.material.button.MaterialButton
+                                        app:backgroundTint="@color/button_bg"
+                                        android:textColor="@color/white"
                                         android:layout_width="wrap_content"
                                         app:cornerRadius="50dp"
                                         android:layout_marginTop="10dp"

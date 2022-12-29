@@ -7,12 +7,13 @@
     <color name="drawer_item">#FFFFFF</color>
     <color name="drawer_item_selected">#a9793b</color>
     <color name="nav_bg">#000000</color>
+    <color name="card_backgroung">#2C2C2C</color>
     <color name="bottom_nav_bg">#222222</color>
     <color name="bottom_centerButton_bg">#FFFFFF</color>
     <color name="bottom_text">#D9FFFFFF</color>
     <color name="bottom_hover_item">#a9793b</color>
     <color name="app_background">#000000</color>
-
+    <color name="textView_readmore">#9460A6</color>
     <color name="textView_login">#FFFFFF</color>
     <color name="textView_sub_login">#CCFFFFFF</color>
     <color name="image_login">#FFFFFF</color>
