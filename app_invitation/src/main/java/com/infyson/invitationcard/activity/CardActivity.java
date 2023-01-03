@@ -344,7 +344,7 @@ public class CardActivity extends Activity implements View.OnTouchListener, OnPh
         try {
             fileOutputStream = new FileOutputStream(mediaFile);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            BitmapPrepareCard.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            BitmapPrepareCard.compress(Bitmap.CompressFormat.PNG, 100, stream);
             byte[] byteArray = stream.toByteArray();
             fileOutputStream.write(byteArray);
             fileOutputStream.close();

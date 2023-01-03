@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -19,6 +20,7 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.print.PrintAttributes;
 import android.provider.MediaStore;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -182,6 +184,10 @@ public class EventDetail extends AppCompatActivity {
     private FirebaseStorage _firebase_storage = FirebaseStorage.getInstance();
 
     private DatabaseReference user = _firebase.getReference("user");
+
+    private DatabaseReference reports = _firebase.getReference("reports");
+
+
     private ChildEventListener _user_child_listener;
 
 
@@ -360,8 +366,8 @@ public class EventDetail extends AppCompatActivity {
                     c = Calendar.getInstance();
 
                     messages.put("review_id",c.getTimeInMillis()+""+random1000_9999());
-                    user.push().updateChildren(messages);
-                    //user.child(user_id_).updateChildren(messages);
+                    //user.push().updateChildren(messages);
+                    user.child(eventDetailRP.getId()+" "+user_id_).updateChildren(messages);
                     messages.clear();
 
                     message.setText("");
@@ -1135,6 +1141,9 @@ public class EventDetail extends AppCompatActivity {
 
             final TextView date = _view.findViewById(R.id.date);
 
+            final ImageView report = _view.findViewById(R.id.report_review);
+
+
 
 
           // message.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/montserrat_regular.ttf"), Typeface.NORMAL);
@@ -1163,12 +1172,25 @@ public class EventDetail extends AppCompatActivity {
                date.setText(Objects.requireNonNull(firebase_msg_list.get(_position).get("date")).toString());
 
 
+
+                report.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        report_now("Report review\n",
+                                "If the review contains abusive, inappropriate, or harmful words or sentences report it now.\n",
+                                "review",
+                                Objects.requireNonNull(firebase_msg_list.get(_position).get("review_id")).toString());
+
+                    }
+                });
+
                 if(Objects.requireNonNull(firebase_msg_list.get(_position).get("msg")).toString().length()>150)
                 {
                     more_.setVisibility(View.VISIBLE);
                 }else {
 
-                    more_.setVisibility(View.INVISIBLE);
+                    more_.setVisibility(View.GONE);
                 }
 
 
@@ -1221,6 +1243,64 @@ public class EventDetail extends AppCompatActivity {
 
     }
 
+
+    private void report_now(String _title, String _message, String type_img_msg, String report_for_id)
+    {
+        try {
+          //  Toast.makeText(this, "hello guys", Toast.LENGTH_SHORT).show();
+            MaterialAlertDialogBuilder builder2 = new MaterialAlertDialogBuilder(EventDetail.this, R.style.DialogTitleTextStyle);
+            builder2.setTitle(_title);
+            builder2.setMessage(Html.fromHtml(_message));
+            builder2.setCancelable(false);
+            builder2.setPositiveButton("Report now",   (arg0, arg1) -> {
+
+                HashMap<String, Object> messages;
+                messages = new HashMap<>();
+                c = Calendar.getInstance();
+                messages.put("date",new SimpleDateFormat("HH:mm aaa, dd MMM yyyy").format(c.getTime()));
+                messages.put("reported_user", user_id_);
+                messages.put("event_id",eventDetailRP.getId());
+                c = Calendar.getInstance();
+                messages.put("report_id",c.getTimeInMillis()+""+random1000_9999());
+
+              if(type_img_msg.equals("img")) {
+                  messages.put("reported_img_id", report_for_id);
+              }else {
+                  messages.put("reported_review_id", report_for_id);
+              }
+                // messages.put("user_img",profile_img_url_);
+                //reports.push().updateChildren(messages);
+                // you can find the total count of reported on a specific
+                // is by adding event id and reported img or review id
+                if(method.isNetworkAvailable()){
+                    reports.child(eventDetailRP.getId()+" "+report_for_id).updateChildren(messages);
+                    Toast.makeText(this, "Reported successfully.", Toast.LENGTH_LONG).show();
+                } else {
+
+                    Toast.makeText(this, "Failed to report.", Toast.LENGTH_LONG).show();
+                }
+                  messages.clear();
+
+            });
+
+
+            builder2.setNegativeButton("Close",   (arg0, arg1) -> {
+
+            });
+
+           //builder2.create();
+           builder2.show();
+            //alertDialog.show();
+
+        }catch (Exception e)
+        {
+            Log.d("error_report",e.toString());
+        }
+
+    }
+
+
+
     public class Recyclerview2Adapter extends RecyclerView.Adapter<Recyclerview2Adapter.ViewHolder> {
         ArrayList<HashMap<String, Object>> _data;
 
@@ -1244,6 +1324,9 @@ public class EventDetail extends AppCompatActivity {
 
 
         final ImageView img_ = _view.findViewById(R.id.img_events);
+        final ImageView report = _view.findViewById(R.id.report);
+
+
 
            try{
 
@@ -1268,6 +1351,17 @@ public class EventDetail extends AppCompatActivity {
                Glide.with(getApplicationContext()).load(Uri.parse(img_url)).thumbnail(0.1f).into(img_);
 
 
+               report.setOnClickListener(new View.OnClickListener() {
+                   @Override
+                   public void onClick(View v) {
+
+                       report_now("Report image\n",
+                               "If the image contains abusive, inappropriate, or harmful content or if you think that this image violates our Policy report it now.\n",
+                               "img",
+                               Objects.requireNonNull(firebase_image_list.get(_position).get("img_id")).toString());
+
+                   }
+               });
 
                img_.setOnClickListener(new View.OnClickListener() {
                    @Override
